@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Be Vietnam Pro", sans-serif;
+  
+  --color-luxury-beige: #F9F6F0; /* Sữa nhạt - Milk white/cream */
+  --color-luxury-nude: #EFE9DF;  /* Màu nude cổ điển */
+  --color-luxury-gold: #C5A880;  /* Champagne Gold tinh tế */
+  --color-luxury-gold-dark: #9A7B56;
+  --color-luxury-charcoal: #201E1D; /* Charcoal sang trọng */
+  --color-luxury-sand: #DED2C1;
+}
+
+@layer base {
+  body {
+    @apply bg-luxury-beige text-luxury-charcoal font-sans antialiased selection:bg-luxury-gold/30 selection:text-luxury-charcoal;
+  }
+}
+
+/* Custom fade-in and smooth scroll animations */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom minimalist scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F9F6F0;
+}
+::-webkit-scrollbar-thumb {
+  background: #C5A880;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9A7B56;
+}
+
+/* Custom Infinite Marquee scroll animation */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Artistic header running light line animation */
+@keyframes header-run {
+  0% {
+    left: -30%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
+.animate-header-run {
+  animation: header-run 5s linear infinite;
+}
+
+/* Beautiful text glitter keyframes */
+@keyframes glitter-shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-glitter {
+  background-size: 200% auto;
+  animation: glitter-shine 3s ease infinite;
+}
+
+/* Hover-activated shimmer sweep */
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-150%) skewX(-25deg);
+  }
+  100% {
+    transform: translateX(150%) skewX(-25deg);
+  }
+}
+
+.group:hover .animate-shimmer-hover {
+  animation: shimmer-sweep 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+
