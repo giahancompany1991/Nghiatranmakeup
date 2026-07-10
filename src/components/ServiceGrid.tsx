@@ -10,14 +10,11 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
   const [activeCategory, setActiveCategory] = useState<"all" | "makeup" | "rentals" | "academy">("all");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  
-  // Infinite scroll handles
-  const [canScrollLeft, setCanScrollLeft] = useState(true);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  
-  // Auto-scroll control states
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+
 
   const categories = [
     { id: "all", label: "Tất Cả Dịch Vụ" },
@@ -97,40 +94,27 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
     ? services 
     : services.filter(s => s.category === activeCategory);
 
-  // Generate an array that is repeated to ensure continuous infinite scrolling
-  const getDisplayServices = () => {
-    if (filtered.length === 0) return [];
-    let list = [...filtered];
-    // Keep appending until we have at least 8 elements in the base set
-    while (list.length < 8) {
-      list = [...list, ...filtered];
-    }
-    // Double the set to create a seamless infinite loop
-    return [...list, ...list];
-  };
-
-  const displayServices = getDisplayServices();
-
-  // Handle scroll progress and seamless wrapping
+  // Handle scroll progress and arrow states
   const handleScroll = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const { scrollLeft, scrollWidth } = container;
-    const singleSetWidth = scrollWidth / 2;
+    const { scrollLeft, scrollWidth, clientWidth } = container;
 
-    if (singleSetWidth <= 0) return;
+    // Check if we can scroll left / right
+    setCanScrollLeft(scrollLeft > 10);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
 
-    // Seamless wrap-around for manual scroll
-    if (scrollLeft >= singleSetWidth) {
-      container.scrollLeft = scrollLeft - singleSetWidth;
-    } else if (scrollLeft <= 0) {
-      container.scrollLeft = singleSetWidth;
-    }
-
-    // Calculate percentage based on current set position
-    const progress = (container.scrollLeft / singleSetWidth) * 100;
+    // Calculate percentage based on scroll progress
+    const maxScroll = scrollWidth - clientWidth;
+    const progress = maxScroll > 0 ? (scrollLeft / maxScroll) * 100 : 0;
     setScrollProgress(progress);
+
+    // Calculate active dot index
+    const cardWidth = window.innerWidth < 640 ? 280 : 320;
+    const cardWidthWithGap = cardWidth + 24;
+    const index = Math.round(scrollLeft / cardWidthWithGap);
+    setActiveIndex(Math.min(Math.max(index, 0), filtered.length - 1));
   };
 
   // Scroll function for manual navigation buttons
@@ -138,10 +122,13 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const scrollAmount = container.clientWidth * 0.75;
+    const cardWidth = window.innerWidth < 640 ? 280 : 320;
+    const cardWidthWithGap = cardWidth + 24;
+
+    const currentScroll = container.scrollLeft;
     const targetScroll = direction === "left" 
-      ? container.scrollLeft - scrollAmount 
-      : container.scrollLeft + scrollAmount;
+      ? currentScroll - cardWidthWithGap 
+      : currentScroll + cardWidthWithGap;
 
     container.scrollTo({
       left: targetScroll,
@@ -149,54 +136,61 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
     });
   };
 
-  // Continuous auto-scrolling effect with requestAnimationFrame
-  useEffect(() => {
+  const scrollToCard = (index: number) => {
     const container = scrollContainerRef.current;
-    if (!container || !isAutoPlaying || isHovered) return;
+    if (!container) return;
 
-    let animationFrameId: number;
-    let lastTime = performance.now();
-    
-    // Very gentle and luxurious speed (35 pixels per second)
-    const speed = 35; 
+    const cardWidth = window.innerWidth < 640 ? 280 : 320;
+    const cardWidthWithGap = cardWidth + 24;
 
-    const step = (time: number) => {
+    container.scrollTo({
+      left: index * cardWidthWithGap,
+      behavior: "smooth"
+    });
+  };
+
+  // Gentle automatic sliding transition (pauses when hovered/touched)
+  useEffect(() => {
+    if (filtered.length <= 1 || isHovered) return;
+
+    const interval = setInterval(() => {
+      const container = scrollContainerRef.current;
       if (!container) return;
-      
-      const delta = (time - lastTime) / 1000;
-      lastTime = time;
 
-      // Increment scroll position (moves right, causing the items to move from right to left)
-      container.scrollLeft += speed * delta;
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      const maxScroll = scrollWidth - clientWidth;
 
-      // Handle seamless infinite wrap-around
-      const singleSetWidth = container.scrollWidth / 2;
-      if (singleSetWidth > 0 && container.scrollLeft >= singleSetWidth) {
-        container.scrollLeft = container.scrollLeft - singleSetWidth;
+      if (scrollLeft >= maxScroll - 15) {
+        container.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        const cardWidth = window.innerWidth < 640 ? 280 : 320;
+        const cardWidthWithGap = cardWidth + 24;
+        container.scrollTo({ left: scrollLeft + cardWidthWithGap, behavior: "smooth" });
       }
+    }, 6000); // Transitions every 6 seconds
 
-      animationFrameId = requestAnimationFrame(step);
-    };
+    return () => clearInterval(interval);
+  }, [filtered, isHovered]);
 
-    animationFrameId = requestAnimationFrame(step);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [isAutoPlaying, isHovered, filtered]);
-
-  // Handle manual scroll listener setup
+  // Handle manual scroll listener setup and window resize
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (container) {
       container.addEventListener("scroll", handleScroll);
-      // Initialize layout
-      handleScroll();
-    }
-    return () => {
-      if (container) {
+      // Initialize states after DOM is ready
+      const timer = setTimeout(handleScroll, 100);
+      return () => {
         container.removeEventListener("scroll", handleScroll);
-      }
+        clearTimeout(timer);
+      };
+    }
+  }, [filtered]);
+
+  // Bind resize event
+  useEffect(() => {
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      window.removeEventListener("resize", handleScroll);
     };
   }, [filtered]);
 
@@ -268,38 +262,32 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
         </div>
 
         {/* Scrolling Showcase Wrapper */}
-        <div className="relative px-6 md:px-12 xl:px-16">
+        <div className="relative px-4 sm:px-12 xl:px-16">
           
-          {/* Navigation Control Buttons */}
-          <div className="absolute top-1/2 -translate-y-1/2 left-2 md:left-6 z-40">
+          {/* Navigation Control Buttons (Hidden on mobile for cleaner card viewing) */}
+          <div className="absolute top-1/2 -translate-y-1/2 left-2 md:left-6 z-40 hidden md:block">
             <button
-              onClick={() => {
-                scroll("left");
-                // Temporarily pause auto playing
-                setIsAutoPlaying(false);
-              }}
-              className="p-3 rounded-full border border-luxury-gold text-luxury-gold bg-luxury-charcoal/95 backdrop-blur-md hover:bg-luxury-gold hover:text-luxury-charcoal hover:scale-110 shadow-lg cursor-pointer transition-all duration-300"
+              onClick={() => scroll("left")}
+              disabled={!canScrollLeft}
+              className={`p-3 rounded-full border border-luxury-gold text-luxury-gold bg-luxury-charcoal/95 backdrop-blur-md hover:bg-luxury-gold hover:text-luxury-charcoal hover:scale-110 shadow-lg cursor-pointer transition-all duration-300 disabled:opacity-30 disabled:pointer-events-none`}
               aria-label="Scroll left"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="absolute top-1/2 -translate-y-1/2 right-2 md:right-6 z-40">
+          <div className="absolute top-1/2 -translate-y-1/2 right-2 md:right-6 z-40 hidden md:block">
             <button
-              onClick={() => {
-                scroll("right");
-                // Temporarily pause auto playing
-                setIsAutoPlaying(false);
-              }}
-              className="p-3 rounded-full border border-luxury-gold text-luxury-gold bg-luxury-charcoal/95 backdrop-blur-md hover:bg-luxury-gold hover:text-luxury-charcoal hover:scale-110 shadow-lg cursor-pointer transition-all duration-300"
+              onClick={() => scroll("right")}
+              disabled={!canScrollRight}
+              className={`p-3 rounded-full border border-luxury-gold text-luxury-gold bg-luxury-charcoal/95 backdrop-blur-md hover:bg-luxury-gold hover:text-luxury-charcoal hover:scale-110 shadow-lg cursor-pointer transition-all duration-300 disabled:opacity-30 disabled:pointer-events-none`}
               aria-label="Scroll right"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Horizontal Drag-To-Scroll Container with custom scrollbar hidden */}
+          {/* Horizontal Snap-To-Scroll Container with scrollbar hidden */}
           <div 
             ref={scrollContainerRef}
             onScroll={handleScroll}
@@ -307,76 +295,88 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
             onMouseLeave={() => setIsHovered(false)}
             onTouchStart={() => setIsHovered(true)}
             onTouchEnd={() => setIsHovered(false)}
-            className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide cursor-grab active:cursor-grabbing px-2 py-4"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory px-2 py-4 scroll-smooth"
           >
-            <AnimatePresence mode="popLayout">
-              {displayServices.map((service, index) => (
-                <motion.div
-                  key={`${service.id}-clone-${index}`}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.4 }}
-                  onClick={() => onOpenBooking(service.title)}
-                  className="flex-shrink-0 w-[280px] sm:w-[320px] aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 hover:border-luxury-gold/60 shadow-[0_15px_30px_rgba(0,0,0,0.5)] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(212,175,55,0.15)] group relative bg-black/40"
-                >
-                  {/* Portrait Visual Image - fully optimized and fitted without distortion */}
-                  <div className="absolute inset-0 w-full h-full overflow-hidden">
-                    <img
-                      src={service.image}
-                      alt={service.title}
-                      className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-[1200ms] ease-out opacity-85 group-hover:opacity-100"
-                      referrerPolicy="no-referrer"
-                    />
+            {filtered.map((service, index) => (
+              <motion.div
+                key={service.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                onClick={() => onOpenBooking(service.title)}
+                className="flex-shrink-0 w-[270px] xs:w-[290px] sm:w-[320px] aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 hover:border-luxury-gold/60 shadow-[0_15px_30px_rgba(0,0,0,0.5)] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(212,175,55,0.15)] group relative bg-black/40 snap-start cursor-pointer"
+              >
+                {/* Portrait Visual Image - fully optimized and fitted without distortion */}
+                <div className="absolute inset-0 w-full h-full overflow-hidden">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-[1200ms] ease-out opacity-85 group-hover:opacity-100"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+
+                {/* Gradient Light/Shadow Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500 z-10" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent opacity-60 pointer-events-none" />
+
+                {/* Elegant Golden Border Inset Frame */}
+                <div className="absolute inset-3 border border-luxury-gold/15 rounded-xl pointer-events-none group-hover:border-luxury-gold/50 transition-colors duration-500 z-20" />
+
+                {/* Floating Elements / Category Badge */}
+                <div className="absolute top-6 left-6 z-30">
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 border border-white/10 backdrop-blur-sm text-luxury-gold shadow-md">
+                    {service.icon}
+                    <span className="text-[9px] uppercase tracking-widest font-bold">
+                      {service.category}
+                    </span>
                   </div>
+                </div>
 
-                  {/* Gradient Light/Shadow Overlays */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500 z-10" />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent opacity-60 pointer-events-none" />
+                {/* Content Block */}
+                <div className="absolute bottom-6 left-6 right-6 z-30 space-y-3">
+                  <p className="text-[10px] text-luxury-gold uppercase tracking-[0.25em] font-medium opacity-90 group-hover:opacity-100 group-hover:tracking-[0.3em] transition-all duration-500">
+                    {service.subtitle}
+                  </p>
 
-                  {/* Elegant Golden Border Inset Frame */}
-                  <div className="absolute inset-3 border border-luxury-gold/15 rounded-xl pointer-events-none group-hover:border-luxury-gold/50 transition-colors duration-500 z-20" />
+                  <h3 className="text-lg sm:text-xl font-serif font-light text-white tracking-wide leading-snug group-hover:text-luxury-beige transition-colors duration-300">
+                    {service.title}
+                  </h3>
 
-                  {/* Floating Elements / Category Badge */}
-                  <div className="absolute top-6 left-6 z-30">
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 border border-white/10 backdrop-blur-sm text-luxury-gold shadow-md">
-                      {service.icon}
-                      <span className="text-[9px] uppercase tracking-widest font-bold">
-                        {service.category}
-                      </span>
-                    </div>
+                  {/* Luxurious expansion line */}
+                  <div className="h-[1px] bg-gradient-to-r from-luxury-gold/60 to-transparent w-12 group-hover:w-full transition-all duration-700 ease-out" />
+
+                  {/* CTA button with micro animation */}
+                  <div className="pt-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-luxury-beige group-hover:text-luxury-gold transition-colors duration-300">
+                    <span>{service.btnText}</span>
+                    <span className="inline-block transform group-hover:translate-x-2 transition-transform duration-300">→</span>
                   </div>
+                </div>
 
-                  {/* Content Block */}
-                  <div className="absolute bottom-6 left-6 right-6 z-30 space-y-3">
-                    <p className="text-[10px] text-luxury-gold uppercase tracking-[0.25em] font-medium opacity-90 group-hover:opacity-100 group-hover:tracking-[0.3em] transition-all duration-500">
-                      {service.subtitle}
-                    </p>
-
-                    <h3 className="text-lg sm:text-xl font-serif font-light text-white tracking-wide leading-snug group-hover:text-luxury-beige transition-colors duration-300">
-                      {service.title}
-                    </h3>
-
-                    {/* Luxurious expansion line */}
-                    <div className="h-[1px] bg-gradient-to-r from-luxury-gold/60 to-transparent w-12 group-hover:w-full transition-all duration-700 ease-out" />
-
-                    {/* CTA button with micro animation */}
-                    <div className="pt-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-luxury-beige group-hover:text-luxury-gold transition-colors duration-300">
-                      <span>{service.btnText}</span>
-                      <span className="inline-block transform group-hover:translate-x-2 transition-transform duration-300">→</span>
-                    </div>
-                  </div>
-
-                  {/* Top-Right Corner Premium Accents */}
-                  <div className="absolute top-6 right-6 z-20 w-1.5 h-1.5 rounded-full bg-luxury-gold/30 group-hover:bg-luxury-gold transition-colors duration-300" />
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                {/* Top-Right Corner Premium Accents */}
+                <div className="absolute top-6 right-6 z-20 w-1.5 h-1.5 rounded-full bg-luxury-gold/30 group-hover:bg-luxury-gold transition-colors duration-300" />
+              </motion.div>
+            ))}
           </div>
 
-          {/* Removed progress bar & autoplay controller at user's request to maintain a clean aesthetic */}
-          <div className="mt-4" />
+          {/* Premium Minimalist Indicator Dots */}
+          {filtered.length > 1 && (
+            <div className="flex justify-center items-center gap-2.5 mt-8 pb-4 animate-[fadeIn_0.5s_ease]">
+              {filtered.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => scrollToCard(i)}
+                  className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
+                    activeIndex === i 
+                      ? "w-8 bg-luxury-gold shadow-[0_0_8px_rgba(197,168,128,0.5)]" 
+                      : "w-2 bg-white/20 hover:bg-white/40"
+                  }`}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
 
         </div>
 
