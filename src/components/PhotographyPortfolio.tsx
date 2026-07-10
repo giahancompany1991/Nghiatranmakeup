@@ -170,7 +170,7 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
       id: "5",
       title: "Năng động tuổi trẻ",
       category: "outdoor",
-      imageUrl: "https://i.postimg.cc/jdy4n3rD/536978203-649891504809881-2796960779020681731-n.jpg",
+      imageUrl: "https://i.postimg.cc/QttgQCmc/Hinh-anh-355.jpg",
       location: "",
       date: "Tháng 6, 2026",
       photographer: "Nghĩa Trần & Team"
