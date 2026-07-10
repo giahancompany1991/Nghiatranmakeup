@@ -73,6 +73,23 @@ html {
   animation: header-run 5s linear infinite;
 }
 
+/* Beautiful light ray sweep across the entire header background */
+@keyframes header-shimmer-sweep {
+  0% {
+    transform: translateX(-120%) skewX(-20deg);
+  }
+  35% {
+    transform: translateX(150%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(150%) skewX(-20deg);
+  }
+}
+
+.animate-header-shimmer {
+  animation: header-shimmer-sweep 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 /* Beautiful text glitter keyframes */
 @keyframes glitter-shine {
   0% {

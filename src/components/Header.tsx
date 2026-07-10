@@ -20,8 +20,13 @@ export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: H
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-luxury-beige/95 backdrop-blur-md border-b border-luxury-nude/40 shadow-md transition-all duration-300">
+    <header className="sticky top-0 z-40 bg-luxury-beige/95 backdrop-blur-md border-b border-luxury-nude/40 shadow-md transition-all duration-300 overflow-hidden">
       
+      {/* Premium Ambient Light Sweep running across the entire header */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-0 bottom-0 w-[40%] h-full bg-gradient-to-r from-transparent via-white/50 via-luxury-gold/15 to-transparent opacity-75 animate-header-shimmer" />
+      </div>
+
       {/* Endless Golden Laser Light Beam running across the header bottom */}
       <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-luxury-nude/30 overflow-hidden pointer-events-none">
         <div className="absolute top-0 bottom-0 w-[180px] bg-gradient-to-r from-transparent via-luxury-gold via-white to-luxury-gold-dark to-transparent animate-header-run opacity-90" />
