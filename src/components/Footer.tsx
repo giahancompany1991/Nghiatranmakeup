@@ -1,5 +1,5 @@
 import React from "react";
-import { MessageSquare, Heart, MapPin, Phone, Instagram, Facebook } from "lucide-react";
+import { MessageSquare, Heart, MapPin, Phone, Instagram, Facebook, MessageCircle } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -38,14 +38,25 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-white/5 text-luxury-gold hover:bg-luxury-gold hover:text-luxury-charcoal transition-all duration-300"
+                title="Facebook Nghĩa Trần"
               >
                 <Facebook className="w-4 h-4" />
+              </a>
+              <a
+                href="https://m.me/share/1CuYEhoAN7"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full bg-white/5 text-luxury-gold hover:bg-luxury-gold hover:text-luxury-charcoal transition-all duration-300"
+                title="Nhắn tin qua Messenger"
+              >
+                <MessageSquare className="w-4 h-4" />
               </a>
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-white/5 text-luxury-gold hover:bg-luxury-gold hover:text-luxury-charcoal transition-all duration-300"
+                title="Instagram"
               >
                 <Instagram className="w-4 h-4" />
               </a>
@@ -54,8 +65,9 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-white/5 text-luxury-gold hover:bg-luxury-gold hover:text-luxury-charcoal transition-all duration-300"
+                title="Chat Zalo"
               >
-                <MessageSquare className="w-4 h-4" />
+                <MessageCircle className="w-4 h-4" />
               </a>
             </div>
           </div>
