@@ -1,5 +1,5 @@
 import React from "react";
-import { MessageSquare, Heart, MapPin, Phone, Instagram, Facebook, MessageCircle } from "lucide-react";
+import { Heart, MapPin, Phone, Instagram, Facebook, MessageCircle } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -42,15 +42,7 @@ export default function Footer() {
               >
                 <Facebook className="w-4 h-4" />
               </a>
-              <a
-                href="https://m.me/share/1CuYEhoAN7"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-full bg-white/5 text-luxury-gold hover:bg-luxury-gold hover:text-luxury-charcoal transition-all duration-300"
-                title="Nhắn tin qua Messenger"
-              >
-                <MessageSquare className="w-4 h-4" />
-              </a>
+
               <a
                 href="https://instagram.com"
                 target="_blank"

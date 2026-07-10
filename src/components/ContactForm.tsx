@@ -163,15 +163,27 @@ export default function ContactForm({ isBookingOpen, setIsBookingOpen, defaultSe
             </div>
 
             <div className="space-y-5">
-              <div className="flex gap-4 items-start bg-white p-4 rounded-xl border border-luxury-nude/40">
-                <div className="p-2.5 rounded-full bg-luxury-beige text-luxury-gold-dark shrink-0">
-                  <MapPin className="w-5 h-5" />
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-white p-4 rounded-xl border border-luxury-nude/40 justify-between">
+                <div className="flex gap-4 items-start">
+                  <div className="p-2.5 rounded-full bg-luxury-beige text-luxury-gold-dark shrink-0">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-luxury-charcoal/50">Địa chỉ Studio</h4>
+                    <p className="text-sm font-semibold text-luxury-charcoal mt-1">Đường tỉnh 787A, Lộc Giang - Gần KCN Thành Thành Công Trảng Bàng - Tây Ninh</p>
+                    <p className="text-xs text-luxury-charcoal/60 mt-0.5">(Hỗ trợ làm dịch vụ tại tiệm & Phục vụ tận nhà khách hàng)</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-luxury-charcoal/50">Địa chỉ Studio</h4>
-                  <p className="text-sm font-semibold text-luxury-charcoal mt-1">Đường tỉnh 787A, Lộc Giang - Gần KCN Thành Thành Công Trảng Bàng - Tây Ninh</p>
-                  <p className="text-xs text-luxury-charcoal/60 mt-0.5">(Hỗ trợ làm dịch vụ tại tiệm & Phục vụ tận nhà khách hàng)</p>
-                </div>
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=Đường+tỉnh+787A,+Lộc+Giang,+Trảng+Bàng,+Tây+Ninh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#4285F4] hover:bg-[#357ae8] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 shrink-0 mt-2 sm:mt-0"
+                  title="Chỉ đường qua Google Maps"
+                >
+                  <Navigation className="w-3.5 h-3.5 fill-current" />
+                  Chỉ đường ↗
+                </a>
               </div>
 
               <a
@@ -332,13 +344,13 @@ export default function ContactForm({ isBookingOpen, setIsBookingOpen, defaultSe
                   </p>
                 </div>
                 <a
-                  href="https://www.google.com/maps/search/?api=1&query=Đường+tỉnh+787A,+Lộc+Giang,+Trảng+Bàng,+Tây+Ninh"
+                  href="https://www.google.com/maps/dir/?api=1&destination=Đường+tỉnh+787A,+Lộc+Giang,+Trảng+Bàng,+Tây+Ninh"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-luxury-gold hover:bg-white hover:text-luxury-charcoal text-luxury-charcoal px-3.5 py-2 rounded-lg text-xs font-bold tracking-wider inline-flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0"
+                  className="bg-[#4285F4] hover:bg-white hover:text-[#4285F4] text-white px-4 py-2.5 rounded-lg text-xs font-bold tracking-wider inline-flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0"
                 >
-                  <Navigation className="w-3.5 h-3.5 fill-current" />
-                  Mở Google Maps ↗
+                  <Navigation className="w-3.5 h-3.5 fill-current animate-pulse" />
+                  Chỉ đường Google Maps ↗
                 </a>
               </div>
             </div>

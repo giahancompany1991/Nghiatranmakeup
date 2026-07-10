@@ -252,6 +252,20 @@ export default function CustomerFeedback() {
                     </div>
                   ))}
 
+                  {/* 5-Star Rating directly under customer messages */}
+                  <div className="flex justify-start pl-9 relative z-10 animate-fade-in -mt-2 mb-2">
+                    <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-xl px-3.5 py-1.5 shadow-2xs">
+                      <div className="flex text-amber-500 gap-0.5">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-3 h-3 fill-amber-500" />
+                        ))}
+                      </div>
+                      <span className="text-[10px] text-amber-800 font-sans font-semibold">
+                        Đánh giá dịch vụ: 5/5 ★
+                      </span>
+                    </div>
+                  </div>
+
                   {/* Simulated reply bubble from admin (Nghĩa Trần) */}
                   <div className="flex justify-end gap-2 relative z-10 mt-2">
                     <div className="max-w-[75%] bg-[#E4E2DC] text-luxury-charcoal p-3 rounded-2xl rounded-tr-none text-xs leading-relaxed font-sans shadow-2xs">
@@ -264,6 +278,19 @@ export default function CustomerFeedback() {
                       referrerPolicy="no-referrer"
                     />
                   </div>
+                </div>
+
+                {/* Trust Seal & 5-Star Rating Bar */}
+                <div className="bg-amber-50/80 px-5 py-2.5 border-t border-luxury-nude/20 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] uppercase tracking-wider text-amber-800 font-bold">Chất lượng:</span>
+                    <div className="flex text-amber-500 gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-3 h-3 fill-amber-500" />
+                      ))}
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-luxury-charcoal/60 font-medium">Đã xác nhận dịch vụ 5 sao</span>
                 </div>
 
                 {/* Simulated Bottom Message Input Bar */}
