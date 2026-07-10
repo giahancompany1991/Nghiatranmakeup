@@ -179,7 +179,7 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
       id: "6",
       title: "Cổ tích giữa đời thực",
       category: "pre-wedding",
-      imageUrl: "https://i.postimg.cc/bw8Hx0z7/733935751-900545106411185-3737731012904701789-n.jpg",
+      imageUrl: "https://i.postimg.cc/8cmRRvWc/Hinh-anh-352.jpg",
       location: "Phim trường Paris, TP.HCM",
       date: "Tháng 2, 2026",
       photographer: "Nghĩa Trần"
