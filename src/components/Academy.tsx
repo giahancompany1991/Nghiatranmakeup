@@ -19,16 +19,8 @@ export default function Academy({ onOpenBooking }: AcademyProps) {
 
   const academyImages = [
     {
-      url: "https://i.postimg.cc/WzmSf1YK/6d36364a-33fa-4aa3-b627-852593d587d5.png",
-      caption: "Không gian lớp học chuyên nghiệp tại Studio Nghĩa Trần"
-    },
-    {
-      url: "https://i.postimg.cc/wTHhpb5k/559671843-687344824397882-9036169729980894894-n.jpg",
-      caption: "Nghĩa Trần kèm cặp chi tiết từng thao tác cho học viên"
-    },
-    {
-      url: "https://i.postimg.cc/0NyY38K4/702176760-865133879952308-5820340469512207403-n.jpg",
-      caption: "Thực hành trực tiếp trên mẫu thật chuẩn studio"
+      url: "https://i.postimg.cc/bwb5KCQk/Hinh-anh-351.jpg",
+      caption: "Học viên tự tin thực hành trang điểm cá nhân cùng chị Nghĩa Trần"
     }
   ];
 
@@ -198,17 +190,19 @@ export default function Academy({ onOpenBooking }: AcademyProps) {
               </AnimatePresence>
 
               {/* Navigation dots */}
-              <div className="absolute top-4 right-4 flex gap-1.5 z-20">
-                {academyImages.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentImgIndex(idx)}
-                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                      currentImgIndex === idx ? "bg-luxury-gold w-4" : "bg-white/40 hover:bg-white/70"
-                    }`}
-                  />
-                ))}
-              </div>
+              {academyImages.length > 1 && (
+                <div className="absolute top-4 right-4 flex gap-1.5 z-20">
+                  {academyImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImgIndex(idx)}
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                        currentImgIndex === idx ? "bg-luxury-gold w-4" : "bg-white/40 hover:bg-white/70"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* CTA Course Details Card */}
