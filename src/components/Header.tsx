@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Phone, Calendar, ShieldAlert, LogOut, Sparkles } from "lucide-react";
+import { Phone, Calendar, ShieldAlert, LogOut, Sparkles, ChevronDown } from "lucide-react";
 import { motion } from "motion/react";
 
 interface HeaderProps {
@@ -10,6 +10,14 @@ interface HeaderProps {
 
 export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isServicesDropdownOpen, setIsServicesDropdownOpen] = useState(false);
+
+  const dropdownServices = [
+    { label: "Trang Điểm Chuyên Nghiệp", href: "#makeup-portfolio" },
+    { label: "Dịch Vụ Chụp Ảnh", href: "#photography-portfolio" },
+    { label: "Gói Cưới & Xe Hoa/Váy", href: "#wedding-special" },
+    { label: "Khóa Học Trang Điểm", href: "#academy" }
+  ];
 
   return (
     <header className="sticky top-0 z-40 bg-luxury-beige/95 backdrop-blur-md border-b border-luxury-nude/40 shadow-md transition-all duration-300">
@@ -24,35 +32,86 @@ export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: H
           
           {/* Brand Logo with golden glow, artistic monogram seal and responsive hover animation */}
           <div className="flex items-center">
-            <a href="#" className="flex items-center gap-3 group">
-              {/* Premium Artistic Crest Emblem */}
-              <div className="relative flex items-center justify-center w-10 h-10 rounded-full border border-luxury-gold/50 bg-luxury-charcoal shadow-[0_4px_12px_rgba(0,0,0,0.15)] group-hover:border-luxury-gold transition-all duration-500 overflow-hidden shrink-0 z-10">
-                {/* Radial golden background light */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(197,168,128,0.3)_0%,transparent_70%)]" />
-                {/* Golden running sheen */}
-                <div className="absolute top-0 -inset-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 animate-shimmer-hover" style={{ animationDuration: '1.2s' }} />
-                <span className="font-serif text-[15px] text-luxury-gold tracking-[0.05em] font-bold z-10 transition-transform duration-500 group-hover:scale-110">
-                  N<span className="text-[12px] text-white/90 italic font-normal -ml-0.5">T</span>
-                </span>
+            <a href="#" className="flex items-center gap-3.5 group">
+              {/* Premium Dual-Ring Artistic Crest Emblem with the new logo and micro shimmer */}
+              <div className="relative flex items-center justify-center w-11 h-11 rounded-full border border-luxury-gold/80 bg-luxury-charcoal p-[2px] shadow-[0_4px_15px_rgba(0,0,0,0.15)] group-hover:border-luxury-gold-dark transition-all duration-500 shrink-0 z-10">
+                <div className="w-full h-full rounded-full overflow-hidden border border-white/10">
+                  <img
+                    src="https://i.postimg.cc/WzmSf1YK/6d36364a-33fa-4aa3-b627-852593d587d5.png"
+                    alt="Nghĩa Trần Makeup & Studio"
+                    className="w-full h-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-115"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                {/* Floating subtle shine sweep across emblem on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1200ms] ease-out pointer-events-none rounded-full" />
               </div>
 
-              {/* Sophisticated Typeface */}
-              <div className="flex flex-col text-left">
-                <span className="text-base sm:text-lg font-serif font-bold tracking-[0.22em] text-luxury-charcoal leading-tight group-hover:text-luxury-gold-dark transition-all duration-300">
-                  NGHĨA TRẦN
-                </span>
-                <span className="text-[8px] sm:text-[9px] font-sans tracking-[0.38em] uppercase text-luxury-gold-dark font-bold -mt-0.5 group-hover:tracking-[0.42em] transition-all duration-500">
-                  MAKEUP
-                </span>
+              {/* Sophisticated Editorial Logo Lockup with Elegant Spacing and Line Accents */}
+              <div className="flex flex-col text-left pl-3 border-l border-luxury-gold/30">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-base sm:text-lg font-serif font-light tracking-[0.2em] text-luxury-charcoal uppercase leading-none transition-colors duration-500 group-hover:text-luxury-gold-dark">
+                    Nghĩa
+                  </span>
+                  <span className="text-base sm:text-lg font-serif font-bold tracking-[0.2em] text-luxury-gold-dark uppercase leading-none transition-colors duration-500 group-hover:text-luxury-charcoal">
+                    Trần
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <div className="h-[1px] bg-luxury-gold/40 w-2.5 transition-all duration-500 group-hover:w-4" />
+                  <span className="text-[7.5px] sm:text-[8.5px] font-sans tracking-[0.45em] uppercase text-luxury-gold-dark font-extrabold leading-none transition-all duration-500 group-hover:text-luxury-charcoal">
+                    MAKEUP
+                  </span>
+                  <div className="h-[1px] bg-luxury-gold/40 w-2.5 transition-all duration-500 group-hover:w-4" />
+                </div>
               </div>
               <Sparkles className="w-3.5 h-3.5 text-luxury-gold/70 animate-pulse shrink-0 opacity-80 group-hover:scale-125 group-hover:text-luxury-gold transition-all duration-300" />
             </a>
           </div>
 
           {/* Desktop Navigation with Animated Sliders & Running Shimmers */}
-          <nav className="hidden md:flex space-x-5 lg:space-x-7 items-center">
+          <nav className="hidden md:flex space-x-5 lg:space-x-7 items-center relative z-50">
+            {/* Elegant Dropdown "Dịch vụ" Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setIsServicesDropdownOpen(!isServicesDropdownOpen)}
+                className="relative text-[11px] lg:text-[13px] font-bold text-luxury-charcoal/80 hover:text-luxury-gold-dark transition-colors py-2 px-1 flex items-center gap-1 group uppercase tracking-wider cursor-pointer"
+              >
+                <span className="relative z-10">Dịch vụ</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isServicesDropdownOpen ? "rotate-180" : ""}`} />
+                {/* Underline slider */}
+                <span className={`absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-luxury-gold to-luxury-gold-dark transition-all duration-300 ease-out ${isServicesDropdownOpen ? "w-full" : "w-0 group-hover:w-full"}`} />
+              </button>
+
+              {/* Absolute Dropdown Menu list */}
+              {isServicesDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsServicesDropdownOpen(false)} />
+                  <div className="absolute top-full left-0 mt-2.5 w-60 bg-white/95 backdrop-blur-md rounded-xl border border-luxury-gold/30 shadow-[0_10px_30px_rgba(0,0,0,0.15)] py-2 z-50 animate-[fadeIn_0.2s_ease-out]">
+                    <div className="absolute top-[-6px] left-6 w-3 h-3 bg-white border-t border-l border-luxury-gold/30 rotate-45" />
+                    {dropdownServices.map((sub, sIdx) => (
+                      <a
+                        key={sIdx}
+                        href={sub.href}
+                        onClick={(e) => {
+                          setIsServicesDropdownOpen(false);
+                          const target = document.getElementById(sub.href.substring(1));
+                          if (target) {
+                            e.preventDefault();
+                            target.scrollIntoView({ behavior: "smooth", block: "start" });
+                          }
+                        }}
+                        className="block px-5 py-3 text-[11px] font-bold text-luxury-charcoal hover:bg-luxury-gold/10 hover:text-luxury-gold-dark transition-all uppercase tracking-wider border-b border-luxury-nude/15 last:border-0"
+                      >
+                        {sub.label}
+                      </a>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
             {[
-              { label: "Dịch vụ", href: "#services" },
               { label: "Tác phẩm Makeup", href: "#makeup-portfolio" },
               { label: "Tác phẩm Ảnh", href: "#photography-portfolio" },
               { label: "Gói Cưới", href: "#wedding-special" },
@@ -147,15 +206,42 @@ export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: H
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-luxury-beige border-t border-luxury-nude/40 animate-fade-in">
+        <div className="md:hidden bg-luxury-beige border-t border-luxury-nude/40 animate-fade-in max-h-[85vh] overflow-y-auto">
           <div className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
-            <a
-              href="#services"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-md text-base font-medium text-luxury-charcoal hover:bg-luxury-nude hover:text-luxury-gold-dark"
-            >
-              Dịch vụ
-            </a>
+            {/* Mobile Dropdown for Dịch vụ */}
+            <div className="border-b border-luxury-nude/15 pb-1">
+              <button
+                onClick={() => setIsServicesDropdownOpen(!isServicesDropdownOpen)}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-bold text-luxury-charcoal hover:bg-luxury-nude hover:text-luxury-gold-dark cursor-pointer"
+              >
+                <span>Dịch vụ</span>
+                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isServicesDropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+              
+              {isServicesDropdownOpen && (
+                <div className="pl-6 pr-3 py-1 space-y-1 bg-white/30 rounded-lg mt-1 mb-2">
+                  {dropdownServices.map((sub, sIdx) => (
+                    <a
+                      key={sIdx}
+                      href={sub.href}
+                      onClick={(e) => {
+                        setIsServicesDropdownOpen(false);
+                        setIsMobileMenuOpen(false);
+                        const target = document.getElementById(sub.href.substring(1));
+                        if (target) {
+                          e.preventDefault();
+                          target.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }
+                      }}
+                      className="block px-3 py-2 rounded-md text-sm font-medium text-luxury-charcoal/80 hover:text-luxury-gold-dark hover:bg-luxury-nude"
+                    >
+                      {sub.label}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <a
               href="#makeup-portfolio"
               onClick={() => setIsMobileMenuOpen(false)}

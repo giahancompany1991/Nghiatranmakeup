@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Sparkles, Plus, Image, Heart, Trash2, ExternalLink, X, Brush, Calendar, User, Eye, CheckCircle } from "lucide-react";
+import { motion, useScroll, useTransform } from "motion/react";
 
 interface MakeupWork {
   id: string;
@@ -11,6 +12,117 @@ interface MakeupWork {
   layoutDetails: string;
   makeupArtist: string;
   date: string;
+}
+
+interface MakeupWorkCardProps {
+  key?: React.Key;
+  work: MakeupWork;
+  likesCount: number;
+  isLiked: boolean;
+  onLike: (id: string, e: React.MouseEvent) => void;
+  onDelete: (id: string, e: React.MouseEvent) => void;
+  onClick: () => void;
+}
+
+function MakeupWorkCard({ work, likesCount, isLiked, onLike, onDelete, onClick }: MakeupWorkCardProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  // Smooth parallax scroll mapping: shift background image vertically inside the card
+  const y = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+
+  return (
+    <div
+      ref={containerRef}
+      onClick={onClick}
+      className="group relative aspect-[4/5] overflow-hidden rounded-3xl bg-luxury-charcoal border border-luxury-nude/40 cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5"
+    >
+      {/* Layout Photo with Parallax effect inside a clipped container */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <motion.img
+          src={work.imageUrl}
+          alt={work.title}
+          style={{ y, scale: 1.16 }}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.22]"
+          referrerPolicy="no-referrer"
+        />
+      </div>
+
+      {/* Sophisticated Dark Gradient Vignette */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-85 pointer-events-none" />
+
+      {/* Administrative Delete & Like Controls - Top Right */}
+      <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+        <button
+          onClick={(e) => onLike(work.id, e)}
+          className={`p-2 rounded-full border backdrop-blur-md shadow-md transition-all ${
+            isLiked
+              ? "bg-rose-500 border-rose-500 text-white"
+              : "bg-white/10 border-white/20 text-white hover:bg-white/25"
+          }`}
+          title="Thả tim layout này"
+        >
+          <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-current" : ""}`} />
+        </button>
+        <button
+          onClick={(e) => onDelete(work.id, e)}
+          className="p-2 rounded-full bg-black/60 hover:bg-rose-600 border border-white/10 text-white backdrop-blur-md shadow-md transition-all"
+          title="Xóa layout này"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Style Category badge label - Top Left */}
+      <div className="absolute top-4 left-4 z-10">
+        <span className="text-[9px] uppercase font-bold tracking-widest bg-luxury-charcoal/80 text-luxury-gold border border-luxury-gold/30 px-3.5 py-1 rounded-full backdrop-blur-sm">
+          {work.style === "bridal" && "Cô dâu"}
+          {work.style === "party" && "Đi tiệc / Event"}
+          {work.style === "douyin-korean" && "Douyin / Hàn Quốc"}
+          {work.style === "editorial" && "Mỹ thuật / Concept"}
+        </span>
+      </div>
+
+      {/* Text metadata bottom panel */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-7 space-y-2.5 z-10 pointer-events-none">
+        {work.clientName && (
+          <p className="text-[10px] uppercase tracking-widest text-luxury-gold font-semibold font-sans">
+            Khách: {work.clientName}
+          </p>
+        )}
+        <h3 className="text-lg sm:text-xl font-serif font-medium text-white group-hover:text-luxury-gold transition-colors duration-300">
+          {work.title}
+        </h3>
+        
+        <p className="text-xs text-white/70 line-clamp-2 font-sans leading-relaxed">
+          {work.layoutDetails}
+        </p>
+
+        {/* Bottom stat row */}
+        <div className="flex items-center justify-between text-[10px] text-white/50 pt-2 border-t border-white/10">
+          <span className="flex items-center gap-1">
+            <Brush className="w-3 h-3 text-luxury-gold" />
+            MUA: {work.makeupArtist}
+          </span>
+          <span className="flex items-center gap-1 font-semibold text-white/80">
+            <Heart className="w-3 h-3 text-rose-500 fill-rose-500" />
+            {likesCount} yêu thích
+          </span>
+        </div>
+      </div>
+
+      {/* Eye Indicator Hover Overlay */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        <div className="p-3.5 rounded-full bg-luxury-gold text-luxury-charcoal shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
+          <Eye className="w-4 h-4" />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 interface MakeupPortfolioProps {
@@ -369,89 +481,15 @@ export default function MakeupPortfolio({ onOpenBooking }: MakeupPortfolioProps)
         {/* Makeup Masterpieces Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredWorks.map((work) => (
-            <div
+            <MakeupWorkCard
               key={work.id}
+              work={work}
+              likesCount={likes[work.id] || 0}
+              isLiked={!!likedByUser[work.id]}
+              onLike={handleLike}
+              onDelete={handleDeleteWork}
               onClick={() => setSelectedWork(work)}
-              className="group relative aspect-[4/5] overflow-hidden rounded-3xl bg-luxury-charcoal border border-luxury-nude/40 cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5"
-            >
-              {/* Layout Photo */}
-              <img
-                src={work.imageUrl}
-                alt={work.title}
-                className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
-                referrerPolicy="no-referrer"
-              />
-
-              {/* Sophisticated Dark Gradient Vignette */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-85" />
-
-              {/* Administrative Delete & Like Controls - Top Right */}
-              <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                <button
-                  onClick={(e) => handleLike(work.id, e)}
-                  className={`p-2 rounded-full border backdrop-blur-md shadow-md transition-all ${
-                    likedByUser[work.id]
-                      ? "bg-rose-500 border-rose-500 text-white"
-                      : "bg-white/10 border-white/20 text-white hover:bg-white/25"
-                  }`}
-                  title="Thả tim layout này"
-                >
-                  <Heart className={`w-3.5 h-3.5 ${likedByUser[work.id] ? "fill-current" : ""}`} />
-                </button>
-                <button
-                  onClick={(e) => handleDeleteWork(work.id, e)}
-                  className="p-2 rounded-full bg-black/60 hover:bg-rose-600 border border-white/10 text-white backdrop-blur-md shadow-md transition-all"
-                  title="Xóa layout này"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Style Category badge label - Top Left */}
-              <div className="absolute top-4 left-4 z-10">
-                <span className="text-[9px] uppercase font-bold tracking-widest bg-luxury-charcoal/80 text-luxury-gold border border-luxury-gold/30 px-3.5 py-1 rounded-full backdrop-blur-sm">
-                  {work.style === "bridal" && "Cô dâu"}
-                  {work.style === "party" && "Đi tiệc / Event"}
-                  {work.style === "douyin-korean" && "Douyin / Hàn Quốc"}
-                  {work.style === "editorial" && "Mỹ thuật / Concept"}
-                </span>
-              </div>
-
-              {/* Text metadata bottom panel */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-7 space-y-2.5 z-10">
-                {work.clientName && (
-                  <p className="text-[10px] uppercase tracking-widest text-luxury-gold font-semibold font-sans">
-                    Khách: {work.clientName}
-                  </p>
-                )}
-                <h3 className="text-lg sm:text-xl font-serif font-medium text-white group-hover:text-luxury-gold transition-colors duration-300">
-                  {work.title}
-                </h3>
-                
-                <p className="text-xs text-white/70 line-clamp-2 font-sans leading-relaxed">
-                  {work.layoutDetails}
-                </p>
-
-                {/* Bottom stat row */}
-                <div className="flex items-center justify-between text-[10px] text-white/50 pt-2 border-t border-white/10">
-                  <span className="flex items-center gap-1">
-                    <Brush className="w-3 h-3 text-luxury-gold" />
-                    MUA: {work.makeupArtist}
-                  </span>
-                  <span className="flex items-center gap-1 font-semibold text-white/80">
-                    <Heart className="w-3 h-3 text-rose-500 fill-rose-500" />
-                    {likes[work.id] || 0} yêu thích
-                  </span>
-                </div>
-              </div>
-
-              {/* Eye Indicator Hover Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="p-3.5 rounded-full bg-luxury-gold text-luxury-charcoal shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
-                  <Eye className="w-4 h-4" />
-                </div>
-              </div>
-            </div>
+            />
           ))}
         </div>
 

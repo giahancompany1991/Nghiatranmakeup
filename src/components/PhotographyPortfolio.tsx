@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Camera, Plus, Image, Sparkles, Filter, Trash2, Heart, ExternalLink, X, Compass, Calendar, User } from "lucide-react";
+import { motion, useScroll, useTransform } from "motion/react";
 
 interface PhotoWork {
   id: string;
@@ -9,6 +10,117 @@ interface PhotoWork {
   location: string;
   date: string;
   photographer: string;
+}
+
+interface PhotoWorkCardProps {
+  key?: React.Key;
+  work: PhotoWork;
+  likesCount: number;
+  isLiked: boolean;
+  onLike: (id: string, e: React.MouseEvent) => void;
+  onDelete: (id: string, e: React.MouseEvent) => void;
+  onClick: () => void;
+}
+
+function PhotoWorkCard({ work, likesCount, isLiked, onLike, onDelete, onClick }: PhotoWorkCardProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  // Smooth parallax scroll mapping: shift background image vertically inside the card
+  const y = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+
+  return (
+    <div
+      ref={containerRef}
+      onClick={onClick}
+      className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-luxury-charcoal border border-luxury-nude cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
+    >
+      {/* Photo with Parallax effect inside a clipped container */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <motion.img
+          src={work.imageUrl}
+          alt={work.title}
+          style={{ y, scale: 1.16 }}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.22]"
+          referrerPolicy="no-referrer"
+        />
+      </div>
+
+      {/* Elegance Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-luxury-charcoal via-luxury-charcoal/30 to-transparent opacity-85 pointer-events-none" />
+
+      {/* Action Floating Buttons - Top Right */}
+      <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+        <button
+          onClick={(e) => onLike(work.id, e)}
+          className={`p-2 rounded-full border backdrop-blur-md shadow-md transition-all ${
+            isLiked
+              ? "bg-rose-500 border-rose-500 text-white"
+              : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+          }`}
+          title="Yêu thích tác phẩm"
+        >
+          <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-current" : ""}`} />
+        </button>
+        
+        {/* Admin/Creator delete option to manage the portfolio */}
+        <button
+          onClick={(e) => onDelete(work.id, e)}
+          className="p-2 rounded-full bg-black/60 hover:bg-rose-600 border border-white/10 text-white/90 hover:text-white backdrop-blur-md shadow-md transition-all"
+          title="Xóa tác phẩm"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Category pill label - Top Left */}
+      {work.id !== "1" && (
+        <div className="absolute top-4 left-4 z-10">
+          <span className="text-[9px] uppercase font-bold tracking-widest bg-luxury-charcoal/80 text-luxury-gold border border-luxury-gold/30 px-3 py-1 rounded-full backdrop-blur-sm">
+            {work.category === "pre-wedding" && "Pre-Wedding"}
+            {work.category === "wedding-day" && "Phóng sự cưới"}
+            {work.category === "concept" && "Concept cá nhân"}
+            {work.category === "outdoor" && "Ngoại cảnh"}
+          </span>
+        </div>
+      )}
+
+      {/* Content bottom wrapper */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2 z-10 pointer-events-none">
+        <h3 className="text-lg font-serif font-medium text-white group-hover:text-luxury-gold transition-colors duration-300">
+          {work.title}
+        </h3>
+        
+        {/* Quick Info */}
+        <div className="flex items-center gap-4 text-[10px] text-white/70">
+          {work.location && (
+            <span className="flex items-center gap-1">
+              <Compass className="w-3 h-3 text-luxury-gold" />
+              {work.location}
+            </span>
+          )}
+          <span className="flex items-center gap-1">
+            <Heart className="w-3 h-3 text-rose-400 fill-rose-400/30" />
+            {likesCount} lượt thích
+          </span>
+        </div>
+
+        {/* Micro-interaction line */}
+        <div className="h-0.5 bg-luxury-gold transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+      </div>
+
+      {/* Fullscreen icon indicator */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        <div className="p-3.5 rounded-full bg-luxury-gold/90 text-luxury-charcoal shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
+          <ExternalLink className="w-4 h-4" />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 interface PhotographyPortfolioProps {
@@ -22,7 +134,7 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
       id: "1",
       title: "Khoảnh khắc Gia Đình",
       category: "pre-wedding",
-      imageUrl: "https://i.postimg.cc/VLXW0Zcb/605653442-749806838151680-2705831730492302840-n.jpg",
+      imageUrl: "https://i.postimg.cc/Jz1D51k8/Hinh-anh-348.jpg",
       location: "",
       date: "Tháng 5, 2026",
       photographer: "Nghĩa Trần & Team"
@@ -31,7 +143,7 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
       id: "2",
       title: "Nét Thơ Ngày Báo Hỷ",
       category: "wedding-day",
-      imageUrl: "https://i.postimg.cc/5235nHyN/734152606-900544906411205-8684044934505324883-n.jpg",
+      imageUrl: "https://i.postimg.cc/ncyc1cbR/Hinh-anh-347.jpg",
       location: "",
       date: "Tháng 4, 2026",
       photographer: "Nghĩa Trần"
@@ -170,7 +282,7 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
             <Camera className="w-3.5 h-3.5 text-luxury-gold-dark" /> DỊCH VỤ CHỤP ẢNH CỦA NGHĨA TRẦN
           </span>
           <h2 className="text-3xl md:text-4xl font-serif font-light text-luxury-charcoal tracking-widest leading-tight uppercase">
-            Khoảnh Khắc Cưới Trọn Vẹn
+            Khoảnh Khắc Trọn Vẹn
           </h2>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-luxury-gold/40 to-transparent w-48 mx-auto my-5" />
           <p className="text-xs sm:text-sm text-luxury-charcoal/70 leading-relaxed font-sans max-w-xl mx-auto">
@@ -324,88 +436,15 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
         {/* Gallery Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredWorks.map((work) => (
-            <div
+            <PhotoWorkCard
               key={work.id}
+              work={work}
+              likesCount={likes[work.id] || 0}
+              isLiked={!!likedByUser[work.id]}
+              onLike={handleLike}
+              onDelete={handleDeleteWork}
               onClick={() => setSelectedPhoto(work)}
-              className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-luxury-charcoal border border-luxury-nude cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
-            >
-              {/* Photo */}
-              <img
-                src={work.imageUrl}
-                alt={work.title}
-                className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
-                referrerPolicy="no-referrer"
-              />
-
-              {/* Elegance Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-luxury-charcoal via-luxury-charcoal/30 to-transparent opacity-85" />
-
-              {/* Action Floating Buttons - Top Right */}
-              <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                <button
-                  onClick={(e) => handleLike(work.id, e)}
-                  className={`p-2 rounded-full border backdrop-blur-md shadow-md transition-all ${
-                    likedByUser[work.id]
-                      ? "bg-rose-500 border-rose-500 text-white"
-                      : "bg-white/10 border-white/20 text-white hover:bg-white/20"
-                  }`}
-                  title="Yêu thích tác phẩm"
-                >
-                  <Heart className={`w-3.5 h-3.5 ${likedByUser[work.id] ? "fill-current" : ""}`} />
-                </button>
-                
-                {/* Admin/Creator delete option to manage the portfolio */}
-                <button
-                  onClick={(e) => handleDeleteWork(work.id, e)}
-                  className="p-2 rounded-full bg-black/60 hover:bg-rose-600 border border-white/10 text-white/90 hover:text-white backdrop-blur-md shadow-md transition-all"
-                  title="Xóa tác phẩm"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Category pill label - Top Left */}
-              <div className="absolute top-4 left-4 z-10">
-                <span className="text-[9px] uppercase font-bold tracking-widest bg-luxury-charcoal/80 text-luxury-gold border border-luxury-gold/30 px-3 py-1 rounded-full backdrop-blur-sm">
-                  {work.category === "pre-wedding" && "Pre-Wedding"}
-                  {work.category === "wedding-day" && "Phóng sự cưới"}
-                  {work.category === "concept" && "Concept cá nhân"}
-                  {work.category === "outdoor" && "Ngoại cảnh"}
-                </span>
-              </div>
-
-              {/* Content bottom wrapper */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2 z-10">
-                <h3 className="text-lg font-serif font-medium text-white group-hover:text-luxury-gold transition-colors duration-300">
-                  {work.title}
-                </h3>
-                
-                {/* Quick Info */}
-                <div className="flex items-center gap-4 text-[10px] text-white/70">
-                  {work.location && (
-                    <span className="flex items-center gap-1">
-                      <Compass className="w-3 h-3 text-luxury-gold" />
-                      {work.location}
-                    </span>
-                  )}
-                  <span className="flex items-center gap-1">
-                    <Heart className="w-3 h-3 text-rose-400 fill-rose-400/30" />
-                    {likes[work.id] || 0} lượt thích
-                  </span>
-                </div>
-
-                {/* Micro-interaction line */}
-                <div className="h-0.5 bg-luxury-gold transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-              </div>
-
-              {/* Fullscreen icon indicator */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="p-3.5 rounded-full bg-luxury-gold/90 text-luxury-charcoal shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
-                  <ExternalLink className="w-4 h-4" />
-                </div>
-              </div>
-
-            </div>
+            />
           ))}
         </div>
 
@@ -459,12 +498,14 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
               <div className="space-y-6">
                 
                 {/* Category tag */}
-                <span className="text-[10px] uppercase font-bold tracking-widest text-luxury-gold bg-luxury-gold/10 border border-luxury-gold/30 px-3 py-1 rounded-full">
-                  {selectedPhoto.category === "pre-wedding" && "Pre-Wedding Style"}
-                  {selectedPhoto.category === "wedding-day" && "Phóng Sự Ngày Cưới"}
-                  {selectedPhoto.category === "concept" && "Concept Cá Nhân"}
-                  {selectedPhoto.category === "outdoor" && "Chụp Ngoại Cảnh"}
-                </span>
+                {selectedPhoto.id !== "1" && (
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-luxury-gold bg-luxury-gold/10 border border-luxury-gold/30 px-3 py-1 rounded-full">
+                    {selectedPhoto.category === "pre-wedding" && "Pre-Wedding Style"}
+                    {selectedPhoto.category === "wedding-day" && "Phóng Sự Ngày Cưới"}
+                    {selectedPhoto.category === "concept" && "Concept Cá Nhân"}
+                    {selectedPhoto.category === "outdoor" && "Chụp Ngoại Cảnh"}
+                  </span>
+                )}
 
                 <div className="space-y-2">
                   <h3 className="text-2xl sm:text-3xl font-serif text-luxury-beige leading-tight">

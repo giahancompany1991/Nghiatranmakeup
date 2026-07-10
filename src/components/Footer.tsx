@@ -11,13 +11,21 @@ export default function Footer() {
           
           {/* Logo Column (4 cols) */}
           <div className="md:col-span-4 space-y-4">
-            <a href="#" className="flex flex-col">
-              <span className="text-2xl font-serif font-semibold tracking-[0.15em] text-white">
-                NGHIA TRAN
-              </span>
-              <span className="text-[10px] font-sans tracking-[0.3em] uppercase text-luxury-gold font-medium -mt-1">
-                Makeup & Bridal
-              </span>
+            <a href="#" className="flex items-center gap-3">
+              <img
+                src="https://i.postimg.cc/WzmSf1YK/6d36364a-33fa-4aa3-b627-852593d587d5.png"
+                alt="Nghĩa Trần Makeup & Studio"
+                className="w-12 h-12 rounded-full border border-luxury-gold/30 object-cover shrink-0"
+                referrerPolicy="no-referrer"
+              />
+              <div className="flex flex-col">
+                <span className="text-xl font-serif font-semibold tracking-[0.15em] text-white leading-none">
+                  NGHIA TRAN
+                </span>
+                <span className="text-[10px] font-sans tracking-[0.3em] uppercase text-luxury-gold font-medium mt-1">
+                  Makeup & Bridal
+                </span>
+              </div>
             </a>
             <p className="text-xs text-luxury-beige/60 leading-relaxed font-sans max-w-sm">
               Đánh thức vẻ đẹp rạng rỡ của chính bạn bằng mỹ phẩm high-end chính hãng và kỹ thuật trang điểm nền mịn màng, bền màu suốt 12 giờ.
@@ -26,7 +34,7 @@ export default function Footer() {
             {/* Social Icons */}
             <div className="flex gap-4 pt-2">
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/share/1CuYEhoAN7/?mibextid=wwXIfr"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-white/5 text-luxury-gold hover:bg-luxury-gold hover:text-luxury-charcoal transition-all duration-300"

@@ -17,10 +17,9 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
 
 
   const categories = [
-    { id: "all", label: "Tất Cả Dịch Vụ" },
-    { id: "makeup", label: "Makeup & Photography" },
-    { id: "rentals", label: "Cho Thuê Cưới Hỏi" },
-    { id: "academy", label: "Đào Tạo Học Viên" },
+    { id: "makeup", label: "Makeup & Photography", targetId: "makeup-portfolio" },
+    { id: "rentals", label: "Cho Thuê Cưới Hỏi", targetId: "wedding-special" },
+    { id: "academy", label: "Đào Tạo Học Viên", targetId: "academy" },
   ];
 
   const services = [
@@ -31,7 +30,7 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
       subtitle: "Bridal Makeup Artistry",
       icon: <Heart className="w-4 h-4 text-rose-400" />,
       image: "https://i.postimg.cc/k5gYwgh6/705939190-869958172803212-3999919736120007021-n.jpg",
-      btnText: "Đặt Lịch Ngay"
+      btnText: "Xem Chi Tiết"
     },
     {
       id: "party",
@@ -40,7 +39,7 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
       subtitle: "VIP Party & Event Makeup",
       icon: <Sparkles className="w-4 h-4 text-amber-400" />,
       image: "https://i.postimg.cc/15KZYLX9/653405630-813589101773453-3046577335027418579-n.jpg",
-      btnText: "Đặt Lịch Ngay"
+      btnText: "Xem Chi Tiết"
     },
     {
       id: "concept",
@@ -49,7 +48,7 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
       subtitle: "Concept Portrait Makeup",
       icon: <Camera className="w-4 h-4 text-sky-400" />,
       image: "https://i.postimg.cc/TPsLStQx/476145796-496467826818917-2129807948651930105-n.jpg",
-      btnText: "Đặt Lịch Ngay"
+      btnText: "Xem Chi Tiết"
     },
     {
       id: "wedding-photo",
@@ -58,7 +57,7 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
       subtitle: "Wedding Day Photography",
       icon: <Camera className="w-4 h-4 text-emerald-400" />,
       image: "https://i.postimg.cc/tC1xdQ5X/736314272-900544986411197-9164697215918425671-n.jpg",
-      btnText: "Đặt Lịch Ngay"
+      btnText: "Xem Chi Tiết"
     },
     {
       id: "car-rental",
@@ -67,7 +66,7 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
       subtitle: "Luxury Car & Gift Trays",
       icon: <Car className="w-4 h-4 text-indigo-400" />,
       image: "https://i.postimg.cc/J4dSgJZz/cho-thue-xe-cuoi-bmw-mui-tran-quy-nhon.png",
-      btnText: "Đặt Lịch Ngay"
+      btnText: "Xem Chi Tiết"
     },
     {
       id: "attire-rental",
@@ -76,7 +75,7 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
       subtitle: "Luxury Gowns & Suits Rental",
       icon: <Shirt className="w-4 h-4 text-fuchsia-400" />,
       image: "https://i.postimg.cc/jSPn9Hmy/498320331-573120289153670-2523296540126269653-n.jpg",
-      btnText: "Đặt Lịch Ngay"
+      btnText: "Xem Chi Tiết"
     },
     {
       id: "personal-academy",
@@ -85,9 +84,27 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
       subtitle: "Personal Makeup Studio",
       icon: <GraduationCap className="w-4 h-4 text-yellow-400" />,
       image: "https://i.postimg.cc/wTHhpb5k/559671843-687344824397882-9036169729980894894-n.jpg",
-      btnText: "Đặt Lịch Ngay"
+      btnText: "Xem Chi Tiết"
     }
   ];
+
+  const getTargetSectionId = (id: string) => {
+    switch (id) {
+      case "bridal":
+      case "party":
+        return "makeup-portfolio";
+      case "concept":
+      case "wedding-photo":
+        return "photography-portfolio";
+      case "car-rental":
+      case "attire-rental":
+        return "wedding-special";
+      case "personal-academy":
+        return "academy";
+      default:
+        return "services";
+    }
+  };
 
   // Filter services
   const filtered = activeCategory === "all" 
@@ -167,7 +184,7 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
         const cardWidthWithGap = cardWidth + 24;
         container.scrollTo({ left: scrollLeft + cardWidthWithGap, behavior: "smooth" });
       }
-    }, 6000); // Transitions every 6 seconds
+    }, 3000); // Transitions every 3 seconds to be faster as requested
 
     return () => clearInterval(interval);
   }, [filtered, isHovered]);
@@ -249,6 +266,10 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
                 if (scrollContainerRef.current) {
                   scrollContainerRef.current.scrollTo({ left: 0, behavior: "auto" });
                 }
+                const targetElement = document.getElementById(cat.targetId);
+                if (targetElement) {
+                  targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
               }}
               className={`px-5 py-2.5 rounded-full text-[10px] font-bold tracking-widest uppercase border transition-all duration-300 cursor-pointer active:scale-95 ${
                 activeCategory === cat.id
@@ -304,7 +325,13 @@ export default function ServiceGrid({ onOpenBooking }: ServiceGridProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                onClick={() => onOpenBooking(service.title)}
+                onClick={() => {
+                  const targetId = getTargetSectionId(service.id);
+                  const element = document.getElementById(targetId);
+                  if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
                 className="flex-shrink-0 w-[270px] xs:w-[290px] sm:w-[320px] aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 hover:border-luxury-gold/60 shadow-[0_15px_30px_rgba(0,0,0,0.5)] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(212,175,55,0.15)] group relative bg-black/40 snap-start cursor-pointer"
               >
                 {/* Portrait Visual Image - fully optimized and fitted without distortion */}

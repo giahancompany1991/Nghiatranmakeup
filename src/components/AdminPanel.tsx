@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Users, Calendar, Trash2, Check, RefreshCw, Search, ArrowUpDown, Clock, CheckCircle2, XCircle, AlertCircle, FileSpreadsheet } from "lucide-react";
+import { Users, Calendar, Trash2, Check, RefreshCw, Search, ArrowUpDown, Clock, CheckCircle2, XCircle, AlertCircle, FileSpreadsheet, Lock, Eye, EyeOff } from "lucide-react";
 import { Lead, Booking } from "../types";
 
 export default function AdminPanel() {
@@ -9,7 +9,32 @@ export default function AdminPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem("admin_authenticated") === "true";
+  });
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === "Nghia@19101991") {
+      setIsAuthenticated(true);
+      setErrorMsg("");
+      sessionStorage.setItem("admin_authenticated", "true");
+    } else {
+      setErrorMsg("Mật khẩu không chính xác. Vui lòng thử lại!");
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setPassword("");
+    sessionStorage.removeItem("admin_authenticated");
+  };
+
   const fetchData = async () => {
+    if (!isAuthenticated) return;
     setIsLoading(true);
     try {
       const [leadsRes, bookingsRes] = await Promise.all([
@@ -32,8 +57,10 @@ export default function AdminPanel() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (isAuthenticated) {
+      fetchData();
+    }
+  }, [isAuthenticated]);
 
   const handleUpdateLeadStatus = async (id: string, newStatus: string) => {
     try {
@@ -117,6 +144,68 @@ export default function AdminPanel() {
     }
   };
 
+  if (!isAuthenticated) {
+    return (
+      <section className="py-16 bg-luxury-beige/30 border-t border-luxury-nude animate-fade-in">
+        <div className="max-w-md mx-auto px-4">
+          <div className="bg-white rounded-3xl border border-luxury-nude p-8 sm:p-10 shadow-xl relative overflow-hidden">
+            {/* Visual background decoration */}
+            <div className="absolute -top-12 -right-12 w-32 h-32 bg-luxury-gold/5 rounded-full blur-2xl pointer-events-none" />
+            
+            <div className="text-center space-y-3 mb-8 relative z-10">
+              <div className="w-14 h-14 bg-luxury-charcoal text-luxury-gold rounded-2xl flex items-center justify-center mx-auto shadow-md">
+                <Lock className="w-6 h-6 text-luxury-gold" />
+              </div>
+              <h3 className="text-xl font-serif font-semibold text-luxury-charcoal uppercase tracking-widest pt-2">
+                Nghĩa Trần Admin
+              </h3>
+              <p className="text-xs text-luxury-charcoal/60 max-w-xs mx-auto leading-relaxed">
+                Vui lòng nhập mật khẩu quản trị viên để mở khóa danh sách khách hàng và lịch hẹn đặt trước.
+              </p>
+            </div>
+
+            <form onSubmit={handleLoginSubmit} className="space-y-5 relative z-10">
+              <div className="space-y-1.5">
+                <label className="text-[10px] uppercase tracking-widest font-bold text-luxury-charcoal/70 block">
+                  Mật khẩu truy cập
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Nhập mật khẩu..."
+                    className="w-full pl-4 pr-10 py-3 rounded-xl border border-luxury-nude text-xs bg-luxury-beige/10 text-luxury-charcoal focus:outline-none focus:ring-1 focus:ring-luxury-gold focus:border-luxury-gold"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-luxury-charcoal/40 hover:text-luxury-charcoal/80 p-1 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {errorMsg && (
+                  <p className="text-[10px] text-red-500 font-semibold flex items-center gap-1 mt-1">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    {errorMsg}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-xl bg-luxury-charcoal hover:bg-luxury-gold text-white hover:text-luxury-charcoal text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-md cursor-pointer"
+              >
+                Xác Nhận Truy Cập
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-12 bg-white border-t border-luxury-nude animate-fade-in">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -142,6 +231,12 @@ export default function AdminPanel() {
               className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2.5 rounded-lg border border-luxury-nude hover:bg-luxury-beige transition-colors cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} /> Tải Lại Dữ Liệu
+            </button>
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2.5 rounded-lg border border-red-200 text-red-700 hover:bg-red-50 transition-colors cursor-pointer"
+            >
+              Đăng Xuất
             </button>
           </div>
         </div>
