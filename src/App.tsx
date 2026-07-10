@@ -11,7 +11,7 @@ import CustomerFeedback from "./components/CustomerFeedback";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
 import AdminPanel from "./components/AdminPanel";
-import { MessageCircle, PhoneCall, Calendar, X, Check, BellRing } from "lucide-react";
+import { MessageCircle, PhoneCall, Calendar, X, Check, BellRing, Facebook } from "lucide-react";
 
 export default function App() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -146,6 +146,21 @@ export default function App() {
           <MessageCircle className="w-5 h-5 sm:w-6 h-6 z-10" />
           <span className="absolute right-14 bg-luxury-charcoal/90 text-white text-[10px] px-2.5 py-1.5 rounded-md font-sans hidden group-hover:block whitespace-nowrap tracking-wide border border-white/10">
             Chat Zalo: 0931.559.307
+          </span>
+        </a>
+
+        {/* Floating Facebook Page Button */}
+        <a
+          href="https://www.facebook.com/share/1CuYEhoAN7/?mibextid=wwXIfr"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-12 h-12 sm:w-14 h-14 bg-[#1877F2] text-white rounded-full flex items-center justify-center shadow-xl hover:bg-[#166FE5] active:scale-95 transition-all duration-300 relative group"
+          title="Liên kết trang Facebook"
+        >
+          <span className="absolute inset-0 rounded-full bg-[#1877F2]/40 animate-ping [animation-delay:0.8s]" />
+          <Facebook className="w-5 h-5 sm:w-6 h-6 z-10 fill-white" />
+          <span className="absolute right-14 bg-luxury-charcoal/90 text-white text-[10px] px-2.5 py-1.5 rounded-md font-sans hidden group-hover:block whitespace-nowrap tracking-wide border border-white/10">
+            Facebook Nghĩa Trần
           </span>
         </a>
 

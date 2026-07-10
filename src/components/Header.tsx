@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Phone, Calendar, ShieldAlert, LogOut, Sparkles, ChevronDown } from "lucide-react";
+import { Phone, Calendar, ShieldAlert, LogOut, Sparkles, ChevronDown, Facebook } from "lucide-react";
 import { motion } from "motion/react";
 
 interface HeaderProps {
@@ -167,6 +167,16 @@ export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: H
             </button>
 
             <a
+              href="https://www.facebook.com/share/1CuYEhoAN7/?mibextid=wwXIfr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center p-2.5 rounded-full bg-[#1877F2]/10 text-[#1877F2] hover:bg-[#1877F2] hover:text-white transition-all border border-[#1877F2]/20 shadow-sm hover:shadow-[0_0_12px_rgba(24,119,242,0.3)] active:scale-95"
+              title="Liên kết trang Facebook"
+            >
+              <Facebook className="w-4 h-4 fill-current" />
+            </a>
+
+            <a
               href="tel:0931559307"
               className="inline-flex items-center justify-center p-2.5 rounded-full bg-luxury-nude text-luxury-charcoal hover:bg-luxury-gold-dark hover:text-white transition-all border border-luxury-nude/60 shadow-sm hover:shadow-[0_0_12px_rgba(197,168,128,0.3)] active:scale-95"
               title="Gọi hotline tư vấn trực tiếp"
@@ -299,6 +309,14 @@ export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: H
               >
                 <Calendar className="w-4 h-4 mr-2" /> Đặt Lịch Ngay
               </button>
+              <a
+                href="https://www.facebook.com/share/1CuYEhoAN7/?mibextid=wwXIfr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-[#1877F2] text-white text-sm font-medium shadow-sm active:scale-95 transition-all"
+              >
+                <Facebook className="w-4 h-4 mr-2 fill-current" /> Facebook Nghĩa Trần
+              </a>
               <a
                 href="tel:0931559307"
                 className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-luxury-nude text-luxury-charcoal text-sm font-medium border border-luxury-nude/60"
