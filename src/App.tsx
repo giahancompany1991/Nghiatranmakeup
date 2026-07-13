@@ -7,24 +7,20 @@ import MakeupPortfolio from "./components/MakeupPortfolio";
 import PhotographyPortfolio from "./components/PhotographyPortfolio";
 import WeddingSpecial from "./components/WeddingSpecial";
 import Academy from "./components/Academy";
+import MakeupTips from "./components/MakeupTips";
 import CustomerFeedback from "./components/CustomerFeedback";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
-import AdminPanel from "./components/AdminPanel";
 import { MessageCircle, PhoneCall, Calendar, X, Check, BellRing, Facebook } from "lucide-react";
 
 export default function App() {
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedService, setSelectedService] = useState("Trang Điểm Cô Dâu");
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMsg, setNotificationMsg] = useState("");
 
   const handleOpenBooking = (serviceName?: string) => {
-    if (serviceName) {
-      setSelectedService(serviceName);
-    }
-    setIsBookingOpen(true);
+    window.open("https://zalo.me/0931559307", "_blank", "noopener,noreferrer");
   };
 
   // Setup Event listener on window to listen to mock SMS submissions for toast alerts
@@ -71,17 +67,12 @@ export default function App() {
       
       {/* Header */}
       <Header
-        isAdminOpen={isAdminOpen}
-        setIsAdminOpen={setIsAdminOpen}
         onOpenBooking={() => handleOpenBooking()}
       />
 
       {/* Main Sections */}
       <main className="flex-grow">
         
-        {/* Render Admin Panel at the top if enabled */}
-        {isAdminOpen && <AdminPanel />}
-
         {/* Hero Banner */}
         <Hero onOpenBooking={() => handleOpenBooking()} />
 
@@ -102,6 +93,9 @@ export default function App() {
 
         {/* Personal Makeup Academy Course */}
         <Academy onOpenBooking={handleOpenBooking} />
+
+        {/* Exclusive Personal Makeup Tips & Experience Sharing */}
+        <MakeupTips />
 
         {/* Customer Feedbacks */}
         <CustomerFeedback />
@@ -165,8 +159,10 @@ export default function App() {
         </a>
 
         {/* Quick Booking Button */}
-        <button
-          onClick={() => handleOpenBooking()}
+        <a
+          href="https://zalo.me/0931559307"
+          target="_blank"
+          rel="noopener noreferrer"
           className="w-12 h-12 sm:w-14 h-14 bg-luxury-charcoal text-luxury-gold rounded-full flex items-center justify-center shadow-xl hover:bg-luxury-gold hover:text-luxury-charcoal active:scale-95 transition-all duration-300 relative group cursor-pointer border border-luxury-gold/30"
           title="Đặt lịch hẹn làm đẹp"
         >
@@ -174,7 +170,7 @@ export default function App() {
           <span className="absolute right-14 bg-luxury-charcoal/90 text-white text-[10px] px-2.5 py-1.5 rounded-md font-sans hidden group-hover:block whitespace-nowrap tracking-wide border border-white/10">
             Đặt Lịch Ngay
           </span>
-        </button>
+        </a>
 
       </div>
 

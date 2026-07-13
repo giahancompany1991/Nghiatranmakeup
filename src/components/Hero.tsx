@@ -75,14 +75,16 @@ export default function Hero({ onOpenBooking }: HeroProps) {
               transition={{ duration: 0.8, delay: 0.5 }}
               className="flex flex-col sm:flex-row gap-4 pt-2"
             >
-              <button
-                onClick={onOpenBooking}
+              <a
+                href="https://zalo.me/0931559307"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-10 py-4 rounded-full bg-luxury-gold text-luxury-charcoal text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-luxury-charcoal active:scale-98 transition-all duration-300 shadow-lg shadow-luxury-gold/25 group cursor-pointer"
               >
                 <Calendar className="w-4 h-4 mr-2" />
                 Đặt Lịch Ngay
                 <ArrowRight className="w-3.5 h-3.5 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-              </button>
+              </a>
 
               <a
                 href="tel:0931559307"

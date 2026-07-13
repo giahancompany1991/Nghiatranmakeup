@@ -147,7 +147,7 @@ export default function ContactForm({ isBookingOpen, setIsBookingOpen, defaultSe
         
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* Contact details & Map on left */}
+          {/* Contact details on left */}
           <div className="lg:col-span-5 space-y-8">
             <div className="space-y-4">
               <span className="text-xs uppercase tracking-widest text-luxury-gold-dark font-semibold inline-flex items-center gap-1.5">
@@ -188,7 +188,7 @@ export default function ContactForm({ isBookingOpen, setIsBookingOpen, defaultSe
 
               <a
                 href="tel:0931559307"
-                className="flex gap-4 items-start bg-white p-4 rounded-xl border border-luxury-nude/40 hover:bg-luxury-nude/10 transition-colors"
+                className="flex gap-4 items-start bg-white p-4 rounded-xl border border-luxury-nude/40 hover:bg-luxury-nude/10 transition-colors block"
               >
                 <div className="p-2.5 rounded-full bg-luxury-beige text-luxury-gold-dark shrink-0">
                   <Phone className="w-5 h-5 animate-pulse" />
@@ -199,9 +199,21 @@ export default function ContactForm({ isBookingOpen, setIsBookingOpen, defaultSe
                   <p className="text-xs text-luxury-charcoal/60 mt-0.5">Hỗ trợ 24/7 qua cuộc gọi hoặc tin nhắn SMS</p>
                 </div>
               </a>
-            </div>
 
-            {/* Styled Map Container - High-fidelity 3D Interactive Map */}
+              <a
+                href="https://zalo.me/0931559307"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-xl bg-[#0068ff] hover:bg-[#0052cc] text-white text-xs font-bold uppercase tracking-widest transition-all shadow-md active:scale-95 cursor-pointer block"
+              >
+                <MessageSquare className="w-4 h-4 fill-current animate-bounce" />
+                Liên Hệ Nhắn Tin Zalo Ngay
+              </a>
+            </div>
+          </div>
+
+          {/* High-fidelity 3D Interactive Map on right */}
+          <div className="lg:col-span-7">
             <div className="rounded-2xl overflow-hidden border border-luxury-nude bg-[#100f0e] text-white p-5 sm:p-6 shadow-xl relative space-y-4 group">
               <div className="flex justify-between items-center pb-3 border-b border-white/5">
                 <div className="flex items-center gap-2">
@@ -356,101 +368,7 @@ export default function ContactForm({ isBookingOpen, setIsBookingOpen, defaultSe
             </div>
           </div>
 
-          {/* Lead Capture form on right */}
-          <div className="lg:col-span-7">
-            <div className="bg-white p-8 md:p-10 rounded-2xl border border-luxury-nude shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-luxury-gold/5 rounded-full blur-2xl" />
-              
-              <div className="relative z-10 space-y-6">
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-serif text-luxury-charcoal">Yêu Cầu Tư Vấn Dịch Vụ</h3>
-                  <p className="text-xs text-luxury-charcoal/50 mt-1 font-sans">
-                    Nghĩa Trần sẽ liên hệ tư vấn trực tiếp và gửi báo giá ưu đãi 10% đến SĐT của bạn.
-                  </p>
-                </div>
 
-                {leadSuccess ? (
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 text-center space-y-3 animate-fade-in">
-                    <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto animate-bounce" />
-                    <h4 className="text-base font-bold text-emerald-800">Gửi Yêu Cầu Thành Công!</h4>
-                    <p className="text-xs text-emerald-700 leading-relaxed">
-                      Cảm ơn bạn đã quan tâm. Thông báo đã được chuyển thẳng đến Nghĩa Trần qua SĐT <strong>0931559307</strong>. Chúng tôi sẽ gọi lại tư vấn cho bạn ngay lập tức!
-                    </p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleLeadSubmit} className="space-y-4">
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-semibold text-luxury-charcoal/70 block mb-1">
-                          Họ và tên của bạn <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={leadName}
-                          onChange={(e) => setLeadName(e.target.value)}
-                          placeholder="Nguyễn Văn A"
-                          className="w-full px-4 py-3 rounded-lg border border-luxury-nude focus:ring-1 focus:ring-luxury-gold-dark focus:border-luxury-gold-dark text-xs sm:text-sm bg-luxury-beige/20 text-luxury-charcoal focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-semibold text-luxury-charcoal/70 block mb-1">
-                          Số điện thoại nhận tư vấn <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                          type="tel"
-                          required
-                          value={leadPhone}
-                          onChange={(e) => setLeadPhone(e.target.value)}
-                          placeholder="09xx xxx xxx"
-                          className="w-full px-4 py-3 rounded-lg border border-luxury-nude focus:ring-1 focus:ring-luxury-gold-dark focus:border-luxury-gold-dark text-xs sm:text-sm bg-luxury-beige/20 text-luxury-charcoal focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-semibold text-luxury-charcoal/70 block mb-1">
-                        Dịch vụ bạn quan tâm nhất
-                      </label>
-                      <select
-                        value={leadService}
-                        onChange={(e) => setLeadService(e.target.value as ServiceType)}
-                        className="w-full px-4 py-3 rounded-lg border border-luxury-nude focus:ring-1 focus:ring-luxury-gold-dark focus:border-luxury-gold-dark text-xs sm:text-sm bg-luxury-beige/20 text-luxury-charcoal focus:outline-none"
-                      >
-                        <option value="bridal">Trang Điểm Cô Dâu (Bridal)</option>
-                        <option value="party">Trang Điểm Tiệc & Sự Kiện (Event)</option>
-                        <option value="concept">Combo Ảnh Cá Nhân & Concept (Photo + Makeup)</option>
-                        <option value="academy">Đào Tạo Makeup Cá Nhân (5 Buổi)</option>
-                        <option value="other">Yêu cầu tư vấn khác</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-semibold text-luxury-charcoal/70 block mb-1">
-                        Ghi chú thêm về yêu cầu của bạn (nếu có)
-                      </label>
-                      <textarea
-                        rows={4}
-                        value={leadMessage}
-                        onChange={(e) => setLeadMessage(e.target.value)}
-                        placeholder="Ví dụ: Ngày cưới dự kiến của em là 20/12, cần make tại nhà ở Quận 2..."
-                        className="w-full px-4 py-3 rounded-lg border border-luxury-nude focus:ring-1 focus:ring-luxury-gold-dark focus:border-luxury-gold-dark text-xs sm:text-sm bg-luxury-beige/20 text-luxury-charcoal focus:outline-none resize-none"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isLeadSubmitting}
-                      className="w-full inline-flex items-center justify-center py-4 rounded-xl bg-luxury-charcoal hover:bg-luxury-gold text-white text-xs font-bold uppercase tracking-widest transition-colors duration-300 shadow-md cursor-pointer disabled:opacity-50"
-                    >
-                      <Send className="w-3.5 h-3.5 mr-2" />
-                      {isLeadSubmitting ? "Đang gửi thông tin..." : "Gửi Yêu Cầu Tư Vấn - Nhận Ưu Đãi 10%"}
-                    </button>
-                  </form>
-                )}
-              </div>
-            </div>
-          </div>
 
         </div>
 

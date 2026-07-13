@@ -18,11 +18,10 @@ interface PhotoWorkCardProps {
   likesCount: number;
   isLiked: boolean;
   onLike: (id: string, e: React.MouseEvent) => void;
-  onDelete: (id: string, e: React.MouseEvent) => void;
   onClick: () => void;
 }
 
-function PhotoWorkCard({ work, likesCount, isLiked, onLike, onDelete, onClick }: PhotoWorkCardProps) {
+function PhotoWorkCard({ work, likesCount, isLiked, onLike, onClick }: PhotoWorkCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   
   const { scrollYProgress } = useScroll({
@@ -65,15 +64,6 @@ function PhotoWorkCard({ work, likesCount, isLiked, onLike, onDelete, onClick }:
           title="Yêu thích tác phẩm"
         >
           <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-current" : ""}`} />
-        </button>
-        
-        {/* Admin/Creator delete option to manage the portfolio */}
-        <button
-          onClick={(e) => onDelete(work.id, e)}
-          className="p-2 rounded-full bg-black/60 hover:bg-rose-600 border border-white/10 text-white/90 hover:text-white backdrop-blur-md shadow-md transition-all"
-          title="Xóa tác phẩm"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
 
@@ -198,16 +188,6 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
   });
   const [likedByUser, setLikedByUser] = useState<Record<string, boolean>>({});
 
-  // Add work state
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newCategory, setNewCategory] = useState<"pre-wedding" | "wedding-day" | "concept" | "outdoor">("pre-wedding");
-  const [newImageUrl, setNewImageUrl] = useState("");
-  const [newLocation, setNewLocation] = useState("");
-  const [newDate, setNewDate] = useState("");
-  const [newPhotographer, setNewPhotographer] = useState("Nghĩa Trần");
-  const [formError, setFormError] = useState("");
-
   const handleLike = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (likedByUser[id]) {
@@ -217,52 +197,6 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
       setLikes(prev => ({ ...prev, [id]: prev[id] + 1 }));
       setLikedByUser(prev => ({ ...prev, [id]: true }));
     }
-  };
-
-  const handleAddWork = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle.trim()) {
-      setFormError("Vui lòng điền tiêu đề tác phẩm");
-      return;
-    }
-
-    // Default beautiful fallback images if user doesn't paste one
-    const placeholderImages = [
-      "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=800",
-      "https://images.unsplash.com/photo-1520854221256-17451cc35953?auto=format&fit=crop&q=80&w=800",
-      "https://images.unsplash.com/photo-1507504038482-76210214dae1?auto=format&fit=crop&q=80&w=800",
-      "https://images.unsplash.com/photo-1510076857177-7470066ef490?auto=format&fit=crop&q=80&w=800"
-    ];
-    const finalImage = newImageUrl.trim() || placeholderImages[Math.floor(Math.random() * placeholderImages.length)];
-    const finalLocation = newLocation.trim() || "Nghĩa Trần Studio";
-    const finalDate = newDate.trim() || "Tháng " + (new Date().getMonth() + 1) + ", " + new Date().getFullYear();
-
-    const newWork: PhotoWork = {
-      id: Date.now().toString(),
-      title: newTitle,
-      category: newCategory,
-      imageUrl: finalImage,
-      location: finalLocation,
-      date: finalDate,
-      photographer: newPhotographer
-    };
-
-    setWorks([newWork, ...works]);
-    setLikes(prev => ({ ...prev, [newWork.id]: Math.floor(Math.random() * 15) + 1 }));
-    
-    // Reset Form
-    setNewTitle("");
-    setNewImageUrl("");
-    setNewLocation("");
-    setNewDate("");
-    setNewPhotographer("Nghĩa Trần");
-    setFormError("");
-    setShowAddForm(false);
-  };
-
-  const handleDeleteWork = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setWorks(works.filter(w => w.id !== id));
   };
 
   const filteredWorks = works;
@@ -290,149 +224,6 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
           </p>
         </div>
 
-        {/* Categories Tab & Add Work Trigger */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-6 mb-12 border-b border-luxury-nude pb-6">
-          
-          {/* Add Work Button */}
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-luxury-gold text-luxury-charcoal text-xs font-bold uppercase tracking-widest hover:bg-luxury-charcoal hover:text-white transition-all shadow-md group active:scale-95 cursor-pointer"
-          >
-            <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
-            Thêm tác phẩm mới
-          </button>
-        </div>
-
-        {/* Dynamic Add Work Form Container */}
-        {showAddForm && (
-          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-luxury-nude shadow-xl mb-12 animate-[fadeIn_0.3s_ease]">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg sm:text-xl font-serif font-semibold text-luxury-charcoal inline-flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-luxury-gold" /> Thêm Tác Phẩm Vào Gallery
-              </h3>
-              <button
-                onClick={() => setShowAddForm(false)}
-                className="p-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleAddWork} className="grid sm:grid-cols-2 gap-6">
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Tiêu Đề Tác Phẩm <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    placeholder="Ví dụ: Nàng dâu dịu dàng mùa thu"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-gray-50"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Phân Loại Dịch Vụ <span className="text-rose-500">*</span>
-                  </label>
-                  <select
-                    value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value as any)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-gray-50"
-                  >
-                    <option value="pre-wedding">Pre-Wedding / Album Ảnh Cưới</option>
-                    <option value="wedding-day">Phóng Sự Ngày Cưới</option>
-                    <option value="concept">Concept Cá Nhân / Chân Dung</option>
-                    <option value="outdoor">Chụp Ngoại Cảnh Dã Ngoại</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Link hình ảnh (URL)
-                  </label>
-                  <input
-                    type="url"
-                    value={newImageUrl}
-                    onChange={(e) => setNewImageUrl(e.target.value)}
-                    placeholder="Dán link ảnh (hoặc để trống để nhận ảnh ngẫu nhiên)"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-gray-50"
-                  />
-                  <p className="text-[10px] text-gray-400 mt-1">Hỗ trợ định dạng: JPG, PNG, WebP,... hoặc ảnh trực tuyến Unsplash.</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Địa Điểm Thực Hiện
-                  </label>
-                  <input
-                    type="text"
-                    value={newLocation}
-                    onChange={(e) => setNewLocation(e.target.value)}
-                    placeholder="Ví dụ: Studio Nghĩa Trần, Quận 1"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-gray-50"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Thời Gian Chụp
-                  </label>
-                  <input
-                    type="text"
-                    value={newDate}
-                    onChange={(e) => setNewDate(e.target.value)}
-                    placeholder="Ví dụ: Tháng 7, 2026"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-gray-50"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Nhiếp Ảnh Gia
-                  </label>
-                  <input
-                    type="text"
-                    value={newPhotographer}
-                    onChange={(e) => setNewPhotographer(e.target.value)}
-                    placeholder="Ví dụ: Nghĩa Trần"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-gray-50"
-                  />
-                </div>
-              </div>
-
-              {formError && (
-                <div className="col-span-full text-xs text-rose-500 font-semibold bg-rose-50 p-3 rounded-xl border border-rose-100">
-                  ⚠️ {formError}
-                </div>
-              )}
-
-              <div className="col-span-full flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddForm(false)}
-                  className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 text-xs font-semibold uppercase tracking-wider transition-colors"
-                >
-                  Hủy bỏ
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-luxury-charcoal text-white hover:bg-luxury-gold hover:text-luxury-charcoal text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
-                >
-                  Xác nhận lưu tác phẩm
-                </button>
-              </div>
-
-            </form>
-          </div>
-        )}
-
         {/* Gallery Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredWorks.map((work) => (
@@ -442,7 +233,6 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
               likesCount={likes[work.id] || 0}
               isLiked={!!likedByUser[work.id]}
               onLike={handleLike}
-              onDelete={handleDeleteWork}
               onClick={() => setSelectedPhoto(work)}
             />
           ))}
@@ -453,12 +243,6 @@ export default function PhotographyPortfolio({ onOpenBooking }: PhotographyPortf
           <div className="text-center py-16 bg-white/40 rounded-2xl border border-dashed border-luxury-nude/80">
             <Image className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-sm text-gray-500 font-medium">Chưa có tác phẩm nào thuộc danh mục này.</p>
-            <button
-              onClick={() => { setShowAddForm(true); }}
-              className="text-xs text-luxury-gold-dark font-bold underline mt-2 uppercase tracking-wider block mx-auto"
-            >
-              Thêm tác phẩm đầu tiên
-            </button>
           </div>
         )}
 

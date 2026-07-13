@@ -126,9 +126,9 @@ export default function CustomerFeedback() {
           </p>
         </div>
 
-        {/* Filter Tabs & Add Feedback Button */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-10 border-b border-luxury-nude/40 pb-6">
-          <div className="flex flex-wrap items-center gap-2">
+        {/* Filter Tabs */}
+        <div className="flex justify-center items-center mb-10 border-b border-luxury-nude/40 pb-6">
+          <div className="flex flex-wrap justify-center items-center gap-2">
             {[
               { id: "all", label: "Tất cả" },
               { id: "bridal", label: "Cô dâu rạng rỡ" },
@@ -148,13 +148,6 @@ export default function CustomerFeedback() {
               </button>
             ))}
           </div>
-
-          <button
-            onClick={() => setIsFormOpen(true)}
-            className="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-full bg-luxury-gold/90 text-white text-xs font-semibold hover:bg-luxury-gold-dark transition-all duration-300 shadow-md active:scale-95 border border-luxury-gold"
-          >
-            <Plus className="w-3.5 h-3.5" /> Gửi phản hồi của bạn
-          </button>
         </div>
 
         {/* Dynamic Reviews Grid */}
@@ -351,160 +344,6 @@ export default function CustomerFeedback() {
         </div>
 
       </div>
-
-      {/* Write Feedback Modal Form */}
-      <AnimatePresence>
-        {isFormOpen && (
-          <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
-            
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsFormOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs"
-            />
-
-            {/* Modal Body */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-luxury-nude/50 relative z-10 overflow-hidden"
-            >
-              <button
-                onClick={() => setIsFormOpen(false)}
-                className="absolute top-5 right-5 text-luxury-charcoal/50 hover:text-luxury-charcoal p-1.5 rounded-full hover:bg-luxury-beige transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              <div className="mb-6">
-                <span className="text-[10px] uppercase tracking-widest text-luxury-gold font-bold inline-flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> Chia sẻ khoảnh khắc
-                </span>
-                <h3 className="text-xl font-serif text-luxury-charcoal font-medium mt-1">
-                  Gửi Phản Hồi Của Bạn Cho Chị Nghĩa
-                </h3>
-                <p className="text-xs text-luxury-charcoal/60 mt-1">
-                  Đóng góp ý kiến quý báu của bạn để lan tỏa niềm vui làm đẹp cùng Nghĩa Trần.
-                </p>
-              </div>
-
-              <form onSubmit={handleAddReview} className="space-y-4">
-                
-                {/* Select avatar */}
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-luxury-charcoal/70 mb-2">
-                    Chọn Ảnh Đại Diện Thử Nghiệm
-                  </label>
-                  <div className="flex gap-2.5">
-                    {mockAvatars.map((url, index) => (
-                      <button
-                        type="button"
-                        key={index}
-                        onClick={() => setAvatarIndex(index)}
-                        className={`relative rounded-full overflow-hidden w-10 h-10 border-2 transition-all duration-300 ${
-                          avatarIndex === index ? "border-luxury-gold scale-110 shadow-sm" : "border-transparent opacity-60"
-                        }`}
-                      >
-                        <img src={url} alt="mock avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Name & Role */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-luxury-charcoal/70 mb-1.5">
-                      Tên của bạn <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={newName}
-                      onChange={(e) => setNewName(e.target.value)}
-                      placeholder="VD: Hải Đường"
-                      className="w-full bg-luxury-beige/30 border border-luxury-nude/40 rounded-xl px-3.5 py-2.5 text-xs text-luxury-charcoal focus:outline-none focus:border-luxury-gold transition-colors font-sans"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-luxury-charcoal/70 mb-1.5">
-                      Vai trò / Dịp
-                    </label>
-                    <input
-                      type="text"
-                      value={newRole}
-                      onChange={(e) => setNewRole(e.target.value)}
-                      placeholder="VD: Cô dâu tháng 7, Khách tiệc..."
-                      className="w-full bg-luxury-beige/30 border border-luxury-nude/40 rounded-xl px-3.5 py-2.5 text-xs text-luxury-charcoal focus:outline-none focus:border-luxury-gold transition-colors font-sans"
-                    />
-                  </div>
-                </div>
-
-                {/* Platform & Category selection */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-luxury-charcoal/70 mb-1.5">
-                      Ứng Dụng Chat
-                    </label>
-                    <select
-                      value={newPlatform}
-                      onChange={(e) => setNewPlatform(e.target.value as any)}
-                      className="w-full bg-luxury-beige/30 border border-luxury-nude/40 rounded-xl px-3.5 py-2.5 text-xs text-luxury-charcoal focus:outline-none focus:border-luxury-gold transition-colors font-sans cursor-pointer"
-                    >
-                      <option value="Zalo">Zalo</option>
-                      <option value="Messenger">Messenger</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-luxury-charcoal/70 mb-1.5">
-                      Phân Loại Dịch Vụ
-                    </label>
-                    <select
-                      value={newCategory}
-                      onChange={(e) => setNewCategory(e.target.value as any)}
-                      className="w-full bg-luxury-beige/30 border border-luxury-nude/40 rounded-xl px-3.5 py-2.5 text-xs text-luxury-charcoal focus:outline-none focus:border-luxury-gold transition-colors font-sans cursor-pointer"
-                    >
-                      <option value="bridal">Cô dâu</option>
-                      <option value="party">Makeup đi tiệc</option>
-                      <option value="academy">Khóa học trang điểm</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Message Content */}
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-luxury-charcoal/70 mb-1.5">
-                    Nội dung tin nhắn feedback <span className="text-rose-500">*</span>
-                  </label>
-                  <textarea
-                    required
-                    rows={3}
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Nhập cảm nhận chân thực của bạn gửi đến chị Nghĩa Trần nhé..."
-                    className="w-full bg-luxury-beige/30 border border-luxury-nude/40 rounded-xl px-3.5 py-2.5 text-xs text-luxury-charcoal focus:outline-none focus:border-luxury-gold transition-colors font-sans resize-none"
-                  />
-                </div>
-
-                {/* Submit button */}
-                <div className="pt-3">
-                  <button
-                    type="submit"
-                    className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-luxury-charcoal text-white text-xs font-semibold hover:bg-luxury-gold-dark hover:text-white transition-all duration-300 shadow-md active:scale-98"
-                  >
-                    <Send className="w-3.5 h-3.5" /> Gửi Tin Nhắn Phản Hồi Ngay
-                  </button>
-                </div>
-
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
     </section>
   );

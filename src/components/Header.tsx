@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import { Phone, Calendar, ShieldAlert, LogOut, Sparkles, ChevronDown, Facebook } from "lucide-react";
+import { Phone, Calendar, Sparkles, ChevronDown, Facebook } from "lucide-react";
 import { motion } from "motion/react";
 
 interface HeaderProps {
-  isAdminOpen: boolean;
-  setIsAdminOpen: (open: boolean) => void;
   onOpenBooking: () => void;
 }
 
-export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: HeaderProps) {
+export default function Header({ onOpenBooking }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isServicesDropdownOpen, setIsServicesDropdownOpen] = useState(false);
 
@@ -121,6 +119,7 @@ export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: H
               { label: "Tác phẩm Ảnh", href: "#photography-portfolio" },
               { label: "Gói Cưới", href: "#wedding-special" },
               { label: "Đào Tạo", href: "#academy" },
+              { label: "Bí quyết", href: "#makeup-tips" },
               { label: "Video", href: "#before-after" },
               { label: "Liên Hệ", href: "#contact" },
             ].map((item, index) => (
@@ -145,27 +144,6 @@ export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: H
 
           {/* Action Buttons */}
           <div className="hidden sm:flex items-center space-x-4">
-            {/* Admin Console Toggle */}
-            <button
-              onClick={() => setIsAdminOpen(!isAdminOpen)}
-              className={`inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-all cursor-pointer ${
-                isAdminOpen
-                  ? "bg-red-500/10 text-red-700 border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.15)]"
-                  : "bg-luxury-gold/10 text-luxury-gold-dark border-luxury-gold/25 hover:bg-luxury-gold/20"
-              }`}
-              title="Mở bảng quản lý Đặt Lịch & Leads"
-            >
-              {isAdminOpen ? (
-                <>
-                  <LogOut className="w-3.5 h-3.5" /> Thoát Admin
-                </>
-              ) : (
-                <>
-                  <ShieldAlert className="w-3.5 h-3.5" /> Admin Panel
-                </>
-              )}
-            </button>
-
             <a
               href="https://www.facebook.com/share/1CuYEhoAN7/?mibextid=wwXIfr"
               target="_blank"
@@ -184,24 +162,19 @@ export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: H
               <Phone className="w-4 h-4 animate-pulse" />
             </a>
 
-            <button
-              onClick={onOpenBooking}
+            <a
+              href="https://zalo.me/0931559307"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-luxury-charcoal text-white text-xs font-semibold uppercase tracking-wider hover:bg-luxury-gold-dark hover:text-white transition-all duration-300 shadow-md shadow-luxury-charcoal/10 hover:shadow-[0_4px_15px_rgba(197,168,128,0.3)] cursor-pointer active:scale-95"
             >
               <Calendar className="w-3.5 h-3.5 mr-2" /> Đặt Lịch Ngay
-            </button>
+            </a>
           </div>
 
           {/* Mobile Menu Icon */}
           <div className="md:hidden flex items-center gap-3">
-            <button
-              onClick={() => setIsAdminOpen(!isAdminOpen)}
-              className={`p-1.5 rounded-full border text-xs cursor-pointer ${
-                isAdminOpen ? "bg-red-500/10 text-red-600 border-red-500/20" : "bg-luxury-gold/10 text-luxury-gold-dark border-luxury-gold/20"
-              }`}
-            >
-              <ShieldAlert className="w-4 h-4" />
-            </button>
+
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 text-luxury-charcoal hover:text-luxury-gold-dark focus:outline-none cursor-pointer"
@@ -286,6 +259,13 @@ export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: H
               Đào Tạo
             </a>
             <a
+              href="#makeup-tips"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-base font-medium text-luxury-charcoal hover:bg-luxury-nude hover:text-luxury-gold-dark"
+            >
+              Bí Quyết Makeup
+            </a>
+            <a
               href="#before-after"
               onClick={() => setIsMobileMenuOpen(false)}
               className="block px-3 py-2 rounded-md text-base font-medium text-luxury-charcoal hover:bg-luxury-nude hover:text-luxury-gold-dark"
@@ -300,15 +280,15 @@ export default function Header({ isAdminOpen, setIsAdminOpen, onOpenBooking }: H
               Liên Hệ
             </a>
             <div className="pt-4 pb-2 border-t border-luxury-nude/40 flex flex-col gap-2 px-3">
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  onOpenBooking();
-                }}
+              <a
+                href="https://zalo.me/0931559307"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-luxury-charcoal text-white text-sm font-semibold uppercase tracking-wider"
               >
                 <Calendar className="w-4 h-4 mr-2" /> Đặt Lịch Ngay
-              </button>
+              </a>
               <a
                 href="https://www.facebook.com/share/1CuYEhoAN7/?mibextid=wwXIfr"
                 target="_blank"

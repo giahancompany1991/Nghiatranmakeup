@@ -20,11 +20,10 @@ interface MakeupWorkCardProps {
   likesCount: number;
   isLiked: boolean;
   onLike: (id: string, e: React.MouseEvent) => void;
-  onDelete: (id: string, e: React.MouseEvent) => void;
   onClick: () => void;
 }
 
-function MakeupWorkCard({ work, likesCount, isLiked, onLike, onDelete, onClick }: MakeupWorkCardProps) {
+function MakeupWorkCard({ work, likesCount, isLiked, onLike, onClick }: MakeupWorkCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   
   const { scrollYProgress } = useScroll({
@@ -55,7 +54,7 @@ function MakeupWorkCard({ work, likesCount, isLiked, onLike, onDelete, onClick }
       {/* Sophisticated Dark Gradient Vignette */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-85 pointer-events-none" />
 
-      {/* Administrative Delete & Like Controls - Top Right */}
+      {/* Like Control - Top Right */}
       <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
         <button
           onClick={(e) => onLike(work.id, e)}
@@ -67,13 +66,6 @@ function MakeupWorkCard({ work, likesCount, isLiked, onLike, onDelete, onClick }
           title="Thả tim layout này"
         >
           <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-current" : ""}`} />
-        </button>
-        <button
-          onClick={(e) => onDelete(work.id, e)}
-          className="p-2 rounded-full bg-black/60 hover:bg-rose-600 border border-white/10 text-white backdrop-blur-md shadow-md transition-all"
-          title="Xóa layout này"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
 
@@ -211,18 +203,6 @@ export default function MakeupPortfolio({ onOpenBooking }: MakeupPortfolioProps)
   });
   const [likedByUser, setLikedByUser] = useState<Record<string, boolean>>({});
 
-  // Add new work states
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newStyle, setNewStyle] = useState<"bridal" | "party" | "douyin-korean" | "editorial">("bridal");
-  const [newImageUrl, setNewImageUrl] = useState("");
-  const [newClientName, setNewClientName] = useState("");
-  const [newSkinType, setNewSkinType] = useState("");
-  const [newLayoutDetails, setNewLayoutDetails] = useState("");
-  const [newMakeupArtist, setNewMakeupArtist] = useState("Nghĩa Trần");
-  const [newDate, setNewDate] = useState("");
-  const [formError, setFormError] = useState("");
-
   const handleLike = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (likedByUser[id]) {
@@ -232,58 +212,6 @@ export default function MakeupPortfolio({ onOpenBooking }: MakeupPortfolioProps)
       setLikes(prev => ({ ...prev, [id]: prev[id] + 1 }));
       setLikedByUser(prev => ({ ...prev, [id]: true }));
     }
-  };
-
-  const handleAddMakeupWork = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle.trim()) {
-      setFormError("Vui lòng điền tiêu đề layout makeup");
-      return;
-    }
-
-    const fallbackImages = [
-      "https://images.unsplash.com/photo-1522337241531-97f334585174?auto=format&fit=crop&q=80&w=800",
-      "https://images.unsplash.com/photo-1507504038482-76210214dae1?auto=format&fit=crop&q=80&w=800",
-      "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80&w=800",
-      "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&q=80&w=800"
-    ];
-
-    const finalImage = newImageUrl.trim() || fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
-    const finalClient = newClientName.trim() || "Khách Hàng Nghĩa Trần Studio";
-    const finalSkinType = newSkinType.trim() || "Da thường / Mọi loại da";
-    const finalLayoutDetails = newLayoutDetails.trim() || "Nền mỏng nhẹ như sương, bền mịn rạng rỡ 12H phong cách hiện đại.";
-    const finalDate = newDate.trim() || "Tháng " + (new Date().getMonth() + 1) + ", " + new Date().getFullYear();
-
-    const newWork: MakeupWork = {
-      id: "makeup_" + Date.now().toString(),
-      title: newTitle,
-      style: newStyle,
-      imageUrl: finalImage,
-      clientName: finalClient,
-      skinType: finalSkinType,
-      layoutDetails: finalLayoutDetails,
-      makeupArtist: newMakeupArtist,
-      date: finalDate
-    };
-
-    setWorks([newWork, ...works]);
-    setLikes(prev => ({ ...prev, [newWork.id]: Math.floor(Math.random() * 20) + 5 }));
-
-    // Reset form fields
-    setNewTitle("");
-    setNewImageUrl("");
-    setNewClientName("");
-    setNewSkinType("");
-    setNewLayoutDetails("");
-    setNewMakeupArtist("Nghĩa Trần");
-    setNewDate("");
-    setFormError("");
-    setShowAddForm(false);
-  };
-
-  const handleDeleteWork = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setWorks(works.filter(w => w.id !== id));
   };
 
   const filteredWorks = works;
@@ -311,172 +239,7 @@ export default function MakeupPortfolio({ onOpenBooking }: MakeupPortfolioProps)
           </p>
         </div>
 
-        {/* Filters and Action Buttons */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-6 mb-12 border-b border-luxury-nude pb-6">
-          
-          {/* Trigger Add Form Button */}
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-luxury-gold hover:bg-luxury-charcoal hover:text-white text-luxury-charcoal text-xs font-bold uppercase tracking-widest transition-all shadow-md group active:scale-95 cursor-pointer"
-          >
-            <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
-            Thêm Mới
-          </button>
-        </div>
 
-        {/* Interactive Add Form */}
-        {showAddForm && (
-          <div className="bg-luxury-beige/40 rounded-2xl p-6 sm:p-8 border border-luxury-nude shadow-xl mb-12 animate-[fadeIn_0.3s_ease]">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg sm:text-xl font-serif font-semibold text-luxury-charcoal inline-flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-luxury-gold" /> Thêm Tác Phẩm Trang Điểm Thực Tế
-              </h3>
-              <button
-                onClick={() => setShowAddForm(false)}
-                className="p-1.5 rounded-full bg-white text-gray-500 hover:bg-gray-100 transition-colors shadow-sm"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleAddMakeupWork} className="grid sm:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Tên Layout Makeup <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    placeholder="Ví dụ: Layout Cô Dâu Satin Tone Hồng Khô"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Nhóm Layout <span className="text-rose-500">*</span>
-                  </label>
-                  <select
-                    value={newStyle}
-                    onChange={(e) => setNewStyle(e.target.value as any)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-white"
-                  >
-                    <option value="bridal">Trang Điểm Cô Dâu (Bridal)</option>
-                    <option value="party">Trang Điểm Đi Tiệc (Party/Event)</option>
-                    <option value="douyin-korean">Douyin / Hàn Quốc ngọt ngào</option>
-                    <option value="editorial">Mỹ thuật / Concept thời trang</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Link ảnh layout thực tế
-                  </label>
-                  <input
-                    type="url"
-                    value={newImageUrl}
-                    onChange={(e) => setNewImageUrl(e.target.value)}
-                    placeholder="Dán URL hình ảnh chất lượng cao"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-white"
-                  />
-                  <p className="text-[10px] text-gray-400 mt-1">Sử dụng liên kết ảnh từ Imgur, Postimages, Unsplash,...</p>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Tên Khách Hàng / Model
-                  </label>
-                  <input
-                    type="text"
-                    value={newClientName}
-                    onChange={(e) => setNewClientName(e.target.value)}
-                    placeholder="Ví dụ: Chị Diệu Vy"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-white"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Nhận Diện Đặc Điểm Da
-                  </label>
-                  <input
-                    type="text"
-                    value={newSkinType}
-                    onChange={(e) => setNewSkinType(e.target.value)}
-                    placeholder="Ví dụ: Da hỗn hợp nhạy cảm, dễ xuống tone"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                    Mô Tả Kỹ Thuật & Mỹ Phẩm Điểm Nhấn
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={newLayoutDetails}
-                    onChange={(e) => setNewLayoutDetails(e.target.value)}
-                    placeholder="Ví dụ: Nền che phủ cao mỏng mịn, màu mắt nhũ bắt sáng, gắn mi giả từng cụm rần tự nhiên, giữ tone bền 12H."
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-white resize-none"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                      Chuyên Viên Makeup
-                    </label>
-                    <input
-                      type="text"
-                      value={newMakeupArtist}
-                      onChange={(e) => setNewMakeupArtist(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-luxury-charcoal mb-1.5">
-                      Thời Gian Thực Hiện
-                    </label>
-                    <input
-                      type="text"
-                      value={newDate}
-                      onChange={(e) => setNewDate(e.target.value)}
-                      placeholder="Ví dụ: Tháng 7, 2026"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold text-sm text-luxury-charcoal bg-white"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {formError && (
-                <div className="col-span-full text-xs text-rose-500 font-semibold bg-rose-50 p-3 rounded-xl border border-rose-100">
-                  ⚠️ {formError}
-                </div>
-              )}
-
-              <div className="col-span-full flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddForm(false)}
-                  className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-100 text-xs font-semibold uppercase tracking-wider transition-colors"
-                >
-                  Hủy bỏ
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-luxury-charcoal text-white hover:bg-luxury-gold hover:text-luxury-charcoal text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
-                >
-                  Lưu Tác Phẩm Makeup
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
 
         {/* Makeup Masterpieces Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -487,7 +250,6 @@ export default function MakeupPortfolio({ onOpenBooking }: MakeupPortfolioProps)
               likesCount={likes[work.id] || 0}
               isLiked={!!likedByUser[work.id]}
               onLike={handleLike}
-              onDelete={handleDeleteWork}
               onClick={() => setSelectedWork(work)}
             />
           ))}
@@ -498,12 +260,6 @@ export default function MakeupPortfolio({ onOpenBooking }: MakeupPortfolioProps)
           <div className="text-center py-16 bg-luxury-beige/30 rounded-2xl border border-dashed border-luxury-nude">
             <Image className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-sm text-gray-500 font-medium">Chưa có tác phẩm makeup nào thuộc danh mục này.</p>
-            <button
-              onClick={() => { setShowAddForm(true); }}
-              className="text-xs text-luxury-gold-dark font-bold underline mt-2 uppercase tracking-wider block mx-auto"
-            >
-              Thêm tác phẩm đầu tiên
-            </button>
           </div>
         )}
 
